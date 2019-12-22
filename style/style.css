@@ -1,0 +1,9 @@
+.bill {
+    justify-content: center;
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+}
+input {
+    margin: 10px;
+}
