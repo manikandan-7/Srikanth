@@ -8,7 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <div class='travells-input' id=test>
+    <div class='travells-input'>
         <form>
             <div>
                 <label for="passenger-name">Enter the passenger name</label>
@@ -40,12 +40,19 @@
             </div>
             <div>
                 <label for="busNumber">Select bus number</label>
-                <select id=busNumber>
+                <select id=busNumber >
                     <option selected hidden>Choose here</option>
                 </select>
             </div>
-            <input type="button" id="submit-booking-form" value="Submit">
+            <!-- <input type="button" id="submit-booking-form" value="Submit"> -->
         </form>
+        <div class="travells-input" id=test>
+        <table id = 'table'></table>
+        </div>
+        <button onclick='showPreview()'>Show Preview</button> 
+    </div>
+    <div id='preview'>
+
     </div>
     
 </body>

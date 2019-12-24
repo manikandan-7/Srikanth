@@ -6,3 +6,27 @@
     text-align: right;
     line-height: 40px;
 }
+.table-cell {
+    display: inline-block;
+    width: 35px;
+    background-color: gainsboro;
+    border: 1px solid black;
+    margin: 1px;
+    text-align: center;
+}
+.table-cell-reserved{
+    display: inline-block;
+    width: 35px;
+    background-color: rgb(83, 69, 69);
+    border: 1px solid black;
+    margin: 1px;
+    text-align: center;
+}
+.table-cell-selected{
+    display: inline-block;
+    width: 35px;
+    background-color: rgb(15, 255, 75);
+    border: 1px solid black;
+    margin: 1px;
+    text-align: center;
+}
