@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style/style.css" type='text/css'>
+    <title>Document</title>
+</head>
+<body>
+    <div class='travells-input' id=test>
+        <form>
+            <div>
+                <label for="passenger-name">Enter the passenger name</label>
+                <input type="text" id="passenger-name">
+            </div>
+            <div>
+                <label for="pickup">Enter Starting point</label>
+                <select id="pickup" class=pickup>
+                    <option selected hidden>Choose here</option>
+                </select>
+            </div>
+            <div>
+                <label for="pickup-location">Enter pickup location</label>
+                <select id=pickup-location>
+                    <option selected hidden>Choose here</option>
+                </select>
+            </div>
+            <div>
+                <label for="drop">Enter Destination point</label>
+                <select id="drop">
+                    <option selected hidden>Choose here</option>
+                </select>
+            </div>
+            <div>
+                <label for="drop-location">Enter drop location</label>
+                <select id=drop-location>
+                    <option selected hidden>Choose here</option>
+                </select>
+            </div>
+            <div>
+                <label for="busNumber">Select bus number</label>
+                <select id=busNumber>
+                    <option selected hidden>Choose here</option>
+                </select>
+            </div>
+            <input type="button" id="submit-booking-form" value="Submit">
+        </form>
+    </div>
+    
+</body>
+
+<script src="script/book.js"></script>
+</html>
