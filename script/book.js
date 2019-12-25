@@ -20,8 +20,8 @@ Object.keys(start).forEach(element => {
 });
 function showDest(){
     var element = document.getElementById('drop');
-    while (element.hasChildNodes()){
-        element.removeChild(element.firstChild);
+    while (element.childNodes.length>2){
+        element.removeChild(element.lastChild);
     }
     Array.from(new Set(start[document.getElementById('pickup').value])).forEach(element => {
         var option = document.createElement('option');
@@ -33,8 +33,8 @@ function showDest(){
 
     });
     var element = document.getElementById('pickup-location');
-    while (element.hasChildNodes()){
-        element.removeChild(element.firstChild);
+    while (element.childNodes.length>2){
+        element.removeChild(element.lastChild);
     }
     place[document.getElementById('pickup').value].forEach(element =>{
         var option = document.createElement('option');
@@ -47,8 +47,8 @@ function showDest(){
 }
 function showDest1(){
     var element = document.getElementById('drop-location');
-    while (element.hasChildNodes()){
-        element.removeChild(element.firstChild);
+    while (element.childNodes.length>2){
+        element.removeChild(element.lastChild);
     }
     place[document.getElementById('drop').value].forEach(element =>{
         var option = document.createElement('option');
@@ -63,8 +63,8 @@ function showDest1(){
         }
     });
     var element = document.getElementById('busNumber');
-    while (element.hasChildNodes()){
-        element.removeChild(element.firstChild);
+    while (element.childNodes.length>2){
+        element.removeChild(element.lastChild);
     }
     busNumber.forEach(element => {
         var option = document.createElement('option');
@@ -134,6 +134,10 @@ function swap(a){
 }
 
 function showPreview(){
+    if (selectedSeats.length==0){
+        alert('No Seats Selected..');
+        return
+    }
     while (document.getElementById('preview').hasChildNodes()){
         document.getElementById('preview').removeChild(document.getElementById('preview').firstChild);
     }
@@ -143,19 +147,80 @@ function showPreview(){
     var drop = document.getElementById('drop').value;
     var dropLocation = document.getElementById('drop-location').value;
     var busNumber = document.getElementById('busNumber').value;
-    var output = document.createElement('div');
-    var br = document.createElement('br');
-    output.appendChild(document.createTextNode(passengerName));
-    output.appendChild(br);
-    output.appendChild(document.createTextNode(pickup));
-    output.appendChild(br);
-    output.appendChild(document.createTextNode(pickupLocation));
-    output.appendChild(document.createTextNode(drop));
-    output.appendChild(br);
-    output.appendChild(document.createTextNode(dropLocation));
-    output.appendChild(document.createTextNode(busNumber));
-    output.appendChild(document.createTextNode(selectedSeats.length ))
-    document.getElementById('preview').appendChild(output);
+
+
+    var output = document.createElement('table');
+    var tr0 = document.createElement('tr');
+    var td0 = document.createElement('td');
+    var td1 = document.createElement('td');
+    td0.className = 'tableD';
+    td1.className = 'tableD'
+    tr0.className = 'tableR';
+    output.className = 'output';
+    td0.appendChild(document.createTextNode('Passenger Name'));
+    td1.appendChild(document.createTextNode(passengerName));
+    tr0.appendChild(td0);
+    tr0.appendChild(td1)
+    output.appendChild(tr0);
+    document.getElementById("preview").appendChild(output);
+
+    var tr0 = document.createElement('tr');
+    var td0 = document.createElement('td');
+    var td1 = document.createElement('td');
+    td0.className = 'tableD';
+    td1.className = 'tableD'
+    tr0.className = 'tableR';
+    output.className = 'output';
+    td0.appendChild(document.createTextNode('Deprature and Pickup'));
+    td1.appendChild(document.createTextNode(pickup+' / '+pickupLocation));
+    tr0.appendChild(td0);
+    tr0.appendChild(td1)
+    output.appendChild(tr0);
+    document.getElementById("preview").appendChild(output);
+
+
+    var tr0 = document.createElement('tr');
+    var td0 = document.createElement('td');
+    var td1 = document.createElement('td');
+    td0.className = 'tableD';
+    td1.className = 'tableD'
+    tr0.className = 'tableR';
+    output.className = 'output';
+    td0.appendChild(document.createTextNode('Destination and Drop'));
+    td1.appendChild(document.createTextNode(drop+' / '+dropLocation));
+    tr0.appendChild(td0);
+    tr0.appendChild(td1)
+    output.appendChild(tr0);
+    document.getElementById("preview").appendChild(output);
+
+
+    var tr0 = document.createElement('tr');
+    var td0 = document.createElement('td');
+    var td1 = document.createElement('td');
+    td0.className = 'tableD';
+    td1.className = 'tableD'
+    tr0.className = 'tableR';
+    output.className = 'output';
+    td0.appendChild(document.createTextNode('Seats'));
+    td1.appendChild(document.createTextNode(selectedSeats+'  ('+selectedSeats.length+')'));
+    tr0.appendChild(td0);
+    tr0.appendChild(td1)
+    output.appendChild(tr0);
+    document.getElementById("preview").appendChild(output);
+
+    var tr0 = document.createElement('tr');
+    var td0 = document.createElement('td');
+    var td1 = document.createElement('td');
+    td0.className = 'tableD';
+    td1.className = 'tableD'
+    tr0.className = 'tableR';
+    output.className = 'output';
+    td0.appendChild(document.createTextNode('Travells'));
+    td1.appendChild(document.createTextNode(document.getElementById('busNumber').value));
+    tr0.appendChild(td0);
+    tr0.appendChild(td1)
+    output.appendChild(tr0);
+    document.getElementById("preview").appendChild(output);
 
     var confirmButton = document.createElement('button');
     confirmButton.setAttribute('onclick','confirmBook()');
@@ -171,6 +236,7 @@ function confirmBook(){
     reservedSeats[document.getElementById('busNumber').value] = selectedSeats;
     localStorage.setItem('reservedSeats',JSON.stringify(reservedSeats));
     alert('Booking Confirmed');
+    location.reload();
 }
 
 // end.forEach(element => {

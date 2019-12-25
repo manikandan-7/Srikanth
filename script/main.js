@@ -19,6 +19,10 @@ function getDetails(){
     var from = document.getElementById('from').value;
     var to = document.getElementById('to').value;
     var seats = document.getElementById('seats').value;
+    if (from =='' || to =='' || seats == '' || travellsName==''){
+        alert('Please enter values');
+        return
+    }
     tempArr.push(Array(travellsName,from,to,seats));
     localStorage.setItem('busDetails',JSON.stringify(tempArr))
     // var startingTemp=JSON.parse(localStorage.getItem('starting'));

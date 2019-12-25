@@ -7,50 +7,59 @@
     <link rel="stylesheet" href="style/style.css" type='text/css'>
     <title>Document</title>
 </head>
-<body>
-    <div class='travells-input'>
-        <form>
-            <div>
-                <label for="passenger-name">Enter the passenger name</label>
-                <input type="text" id="passenger-name">
+<body class=gradient>
+    <h2>Start Booking</h2>
+    <div class=bus-bg>
+        <div class='travells-input'>
+            <form>
+                <div>
+                    <label for="passenger-name">Enter the passenger name</label>
+                    <input type="text" id="passenger-name">
+                </div>
+                <div>
+                    <label for="pickup">Enter Starting point</label>
+                    <select id="pickup" class=pickup>
+                        <option selected hidden>Choose here</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pickup-location">Enter pickup location</label>
+                    <select id=pickup-location>
+                        <option selected hidden>Choose here</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="drop">Enter Destination point</label>
+                    <select id="drop">
+                        <option selected hidden>Choose here</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="drop-location">Enter drop location</label>
+                    <select id=drop-location>
+                        <option selected hidden>Choose here</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="busNumber">Select bus number</label>
+                    <select id=busNumber >
+                        <option selected hidden>Choose here</option>
+                    </select>
+                </div>
+                <!-- <input type="button" id="submit-booking-form" value="Submit"> -->
+            </form>
+            <div class=right>
+                <div id=test>
+                    <table id = 'table'></table>
+                    </div>
+                    <button onclick='showPreview()'>Show Preview</button> 
             </div>
-            <div>
-                <label for="pickup">Enter Starting point</label>
-                <select id="pickup" class=pickup>
-                    <option selected hidden>Choose here</option>
-                </select>
-            </div>
-            <div>
-                <label for="pickup-location">Enter pickup location</label>
-                <select id=pickup-location>
-                    <option selected hidden>Choose here</option>
-                </select>
-            </div>
-            <div>
-                <label for="drop">Enter Destination point</label>
-                <select id="drop">
-                    <option selected hidden>Choose here</option>
-                </select>
-            </div>
-            <div>
-                <label for="drop-location">Enter drop location</label>
-                <select id=drop-location>
-                    <option selected hidden>Choose here</option>
-                </select>
-            </div>
-            <div>
-                <label for="busNumber">Select bus number</label>
-                <select id=busNumber >
-                    <option selected hidden>Choose here</option>
-                </select>
-            </div>
-            <!-- <input type="button" id="submit-booking-form" value="Submit"> -->
-        </form>
-        <div class="travells-input" id=test>
-        <table id = 'table'></table>
         </div>
-        <button onclick='showPreview()'>Show Preview</button> 
+
+    
     </div>
+
+
     <div id='preview'>
 
     </div>

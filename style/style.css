@@ -1,10 +1,22 @@
+.header {
+    background: url('../src/banner_NIT_banner.jpg') no-repeat;
+    width: 95%;
+    height: 490px;
+    margin: auto;
+    border-radius: 46px;
+    box-shadow: 2px 2px 2px 2px pink;
+}
 .travells-input {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     text-align: right;
     line-height: 40px;
+    width: 39%;
+    float: right;
+    background: rgba(0, 0, 0, 0.05);
+    margin-top: 8%;
 }
 .table-cell {
     display: inline-block;
@@ -29,4 +41,83 @@
     border: 1px solid black;
     margin: 1px;
     text-align: center;
+}
+.tableD {
+    background-color: wheat;
+    border: 2px solid black;
+    /*! margin: 1px 0; */
+    text-align: center;
+}
+h2{
+    color: #373737;
+    text-align: center;
+    -webkit-text-stroke: 1px bisque;
+    font-size: 218%;
+    margin: 0;
+}
+body {
+    margin: 0;
+}
+.buttons {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background: rgba(255,255,255,0.05);
+   }
+button {
+    margin: 14px;
+    color:white;
+    background: transparent;
+    border: 2px solid#f2ca69;
+    border-radius: 15px;
+    height: 33px;
+    width: 170px;
+}
+button {
+    cursor: pointer;
+    width: 25%;
+}
+.gradient{
+    margin:0;
+    background-image: linear-gradient(to right, red,orange,yellow,green,blue,indigo,violet); 
+}
+.bus-bg {
+    background: url('../src/sahara-bus-travels-service-500x500.png') no-repeat;
+    height: 500px;
+    background-size: contain;
+    margin-top: 4%;
+}
+#seats {
+    width: 226px;
+}
+label {
+    color: white;
+    margin-right: 24px;
+}
+input, select {
+    background: transparent;
+    border: 1.5px solid lightblue;
+    color: #fff;
+    border-radius: 5px;
+    width: 226px;
+}
+.right {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    float: right;
+    align-items: center;
+}
+#preview {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 100px;
+}
+.output {
+    border: 2px solid black;
 }
