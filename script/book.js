@@ -85,7 +85,7 @@ function showTable(){
             
            seats = [];
            selectedSeats = [];
-            for (let i=0; i<=element[3]; i+=10){
+            for (let i=0; i<element[3]; i+=10){
                 let tr = document.createElement('tr');
                 for (let j=1; j<=10; j++){
                     let td = document.createElement('td');
@@ -147,80 +147,29 @@ function showPreview(){
     var drop = document.getElementById('drop').value;
     var dropLocation = document.getElementById('drop-location').value;
     var busNumber = document.getElementById('busNumber').value;
+    var details = {'Passenger Name':passengerName,'Deprature':pickup,'pickup':pickupLocation,'Destination':drop,'drop':dropLocation,'Travels':busNumber,'Number of Seats':'('+selectedSeats.length+')   '+selectedSeats};
+
 
 
     var output = document.createElement('table');
-    var tr0 = document.createElement('tr');
-    var td0 = document.createElement('td');
-    var td1 = document.createElement('td');
-    td0.className = 'tableD';
-    td1.className = 'tableD'
-    tr0.className = 'tableR';
-    output.className = 'output';
-    td0.appendChild(document.createTextNode('Passenger Name'));
-    td1.appendChild(document.createTextNode(passengerName));
-    tr0.appendChild(td0);
-    tr0.appendChild(td1)
-    output.appendChild(tr0);
-    document.getElementById("preview").appendChild(output);
+   
+    Object.keys(details).forEach(element => {
+        var tr0 = document.createElement('tr');
+        var td0 = document.createElement('td');
+        var td1 = document.createElement('td');
+        td0.className = 'tableD';
+        td1.className = 'tableD'
+        tr0.className = 'tableR';
+        output.className = 'output';
+        td0.appendChild(document.createTextNode(element));
+        td1.appendChild(document.createTextNode(details[element]));
+        tr0.appendChild(td0);
+        tr0.appendChild(td1)
+        output.appendChild(tr0);
+        document.getElementById("preview").appendChild(output);
+        
+    });
 
-    var tr0 = document.createElement('tr');
-    var td0 = document.createElement('td');
-    var td1 = document.createElement('td');
-    td0.className = 'tableD';
-    td1.className = 'tableD'
-    tr0.className = 'tableR';
-    output.className = 'output';
-    td0.appendChild(document.createTextNode('Deprature and Pickup'));
-    td1.appendChild(document.createTextNode(pickup+' / '+pickupLocation));
-    tr0.appendChild(td0);
-    tr0.appendChild(td1)
-    output.appendChild(tr0);
-    document.getElementById("preview").appendChild(output);
-
-
-    var tr0 = document.createElement('tr');
-    var td0 = document.createElement('td');
-    var td1 = document.createElement('td');
-    td0.className = 'tableD';
-    td1.className = 'tableD'
-    tr0.className = 'tableR';
-    output.className = 'output';
-    td0.appendChild(document.createTextNode('Destination and Drop'));
-    td1.appendChild(document.createTextNode(drop+' / '+dropLocation));
-    tr0.appendChild(td0);
-    tr0.appendChild(td1)
-    output.appendChild(tr0);
-    document.getElementById("preview").appendChild(output);
-
-
-    var tr0 = document.createElement('tr');
-    var td0 = document.createElement('td');
-    var td1 = document.createElement('td');
-    td0.className = 'tableD';
-    td1.className = 'tableD'
-    tr0.className = 'tableR';
-    output.className = 'output';
-    td0.appendChild(document.createTextNode('Seats'));
-    td1.appendChild(document.createTextNode(selectedSeats+'  ('+selectedSeats.length+')'));
-    tr0.appendChild(td0);
-    tr0.appendChild(td1)
-    output.appendChild(tr0);
-    document.getElementById("preview").appendChild(output);
-
-    var tr0 = document.createElement('tr');
-    var td0 = document.createElement('td');
-    var td1 = document.createElement('td');
-    td0.className = 'tableD';
-    td1.className = 'tableD'
-    tr0.className = 'tableR';
-    output.className = 'output';
-    td0.appendChild(document.createTextNode('Travells'));
-    td1.appendChild(document.createTextNode(document.getElementById('busNumber').value));
-    tr0.appendChild(td0);
-    tr0.appendChild(td1)
-    output.appendChild(tr0);
-    document.getElementById("preview").appendChild(output);
 
     var confirmButton = document.createElement('button');
     confirmButton.setAttribute('onclick','confirmBook()');
