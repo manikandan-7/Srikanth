@@ -1,0 +1,138 @@
+body {
+    /* background-color: black; */
+    background: rgb(42,38,112);
+    background: linear-gradient(90deg, rgba(42,38,112,1) 0%, rgba(37,55,150,0.6572828960685837) 35%, rgba(12,4,193,1) 100%);  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
+    min-height: 100vh;
+    background-size: cover;
+    margin: 0;
+    color: white;
+}
+label {
+    min-width: 30%;
+}
+h1 {
+    text-align: center;
+    color: #000;
+    -webkit-text-stroke: 1px #edffe0;
+    font-weight: bolder;
+}
+div, button, input{
+    border-radius: 10px;
+}
+button, .submit-button {
+    height: 35px;
+    width: 35%;
+    margin: 25px;
+    background: #d3d5bb;
+    border: 2px solid #849555;
+}
+input {
+    height: 35px;
+    border: 2px solid #849555;
+    background: #e3e3d8;
+}
+.form-container {
+    background-color: #0000000f;
+    width: 500px;
+    height: auto;
+    display: inline-flex;
+    flex-direction: column;
+    opacity: 0.9;
+}
+.select {
+    display: flex;
+    justify-content: space-around;
+    height: 45px;
+}
+   
+.select button {
+    width: 49%;
+    margin: 3px;
+}
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    row-gap: 2vh;
+    padding-bottom: 5vh;
+}
+.login-form div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: 5vw;
+   }
+/* #signup-form{
+    display: none;
+} */
+/* #switch-login {
+    background-color: #f2dcdc;
+    border: 3px solid #828180;
+} */
+
+.container-center{
+    display:flex;
+    width: 80%;
+    height: 400px;
+    background-color: rgb(49, 42, 42);
+    opacity: 0.9;
+}
+.header {
+    position:fixed;
+    background-color: black;
+    width:100%;
+    height: 50px;
+    display: flex;
+    top: 0;
+    opacity: 0.9;
+    border-radius: 0;
+    align-items: center;
+    justify-content: center;
+}
+.greetings {
+    display: inline-block;
+    width: 45%;
+    margin: 10px;
+}
+.tools {
+    display: flex;
+    width : 45%;
+    margin: 10px;
+    justify-content: right;
+}
+.flex-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.icons {
+    height: 22px;
+    width: 35px;
+}
+#settings-icon {
+    background: url();
+    filter: invert(100%);
+}
+.settings {
+    display: none;
+    position: fixed;
+    right: 4%;
+    top: 50px;
+    background: black;
+    border-radius: 0;
+    height: 50px;
+    width: 100px;
+    text-align: center;
+    clip-path: polygon(50% 0, 62% 10%, 100% 18%, 100% 100%, 0 100%, 0 20%, 38% 9%);
+    padding-top:20px;
+}
+a{
+    text-decoration: none;
+    color: white;
+}
