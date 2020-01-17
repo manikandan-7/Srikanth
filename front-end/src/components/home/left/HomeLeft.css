@@ -1,0 +1,85 @@
+.HomeLeft {
+    width: 30%;
+    background-color: rgb(240, 230, 230);
+    height: 100%;
+    box-shadow: 0px 0px 2px 1px rgb(202, 200, 202);
+}
+.ProfilePic {
+    height: 8vh;
+    border-radius: 100em;
+    width: 8vh;
+}
+.MyDetails {
+    display: flex;
+    align-items: center;
+    padding: 0.5em;
+    /*! width: 93%; */
+    box-shadow: 0px 0px 2px 1px rgba(128,115,128,1);
+}
+.MyDetails i{
+    margin-right: 1em;
+    cursor: pointer;
+}
+.MyDetailsIcon{
+    margin-left: auto;
+}
+.SearchContact {
+
+    display: flex;
+    background: white;
+    height: 6vh;
+    align-items: center;
+    box-shadow: 0px 0px 2px 1px rgba(128,115,128,1);
+    overflow: hidden;
+}
+
+.SearchContact input {
+    
+    border: none;
+}
+.SearchContact * {
+    padding: 10px;
+}
+.ContactList {
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+    align-items: center;
+    width: 100%;
+    margin-top: 5px;
+    max-height: 77vh;
+}
+.ContactCard img {
+    height: 8vh;
+    border-radius: 100em;
+    width: 8vh;
+}
+.ContactCard {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    border-bottom: 1px solid black;
+    width: 95%;
+    background-color: honeydew;
+}
+.Preview {
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /*! font-weight: normal; */
+    margin-top: 1vh;
+}
+.ContactCard > div:nth-child(2) {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.Name{
+    font-weight: bold;
+}
+.PhoneNumber {
+    margin-left: 1em;
+    font-weight: bold;
+}
+   
