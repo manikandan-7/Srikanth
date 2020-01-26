@@ -31,16 +31,22 @@ class HomeRightContainer extends React.Component {
 render() { 
         var temp = this.props.details.contacts
         for (var i=0;i<temp.length;i++){
+            console.log('.,.,.,.,.,',this.props.details.chat,temp[i].grpid)
             if(temp[i].phone === this.props.details.chat){
                 temp=temp[i]
                 break
             }
+            if(temp[i].grpid === this.props.details.chat){
+                temp=temp[i]
+                break
+            }
+            console.log('temp',temp)
         }
         
         return (
             
                 // this.props.details.chat.length ?
-                <HomeRight details={temp} mydata={this.props.mydata} onload={this.props.details.chat.length}/>
+                <HomeRight details={temp} mydata={this.props.mydata} onload={this.props.details.chat}/>
                 // :
                 // <HomeRight onload={false}/>
                 // <div className='HomeRight'><img src='/image.png' alt='' style={{width:'100%', height:'100%'}}></img></div>

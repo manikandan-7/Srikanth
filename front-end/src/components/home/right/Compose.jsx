@@ -6,8 +6,28 @@ class Compose extends React.Component {
         super()
         this.state={
             composed : '',
-            waiting:''
+            waiting:'',
+            picmsg:'',
+            picbase:'',
+            picmsgvalue:''
         }
+
+    }
+
+
+
+    handleImage=(e)=>{
+            this.setState({
+                picmsg:e.target.files[0],
+                picmsgvalue:e.target.value,
+            })
+
+        this.toBase64(e.target.files[0]).then(res=>{
+            this.setState({
+                picbase:res
+            })
+        })
+        
     }
 
     handleChange=(e)=>{
@@ -18,74 +38,93 @@ class Compose extends React.Component {
         })
     }
     sendMsg=(e)=>{
-        if (this.state.composed.length>=1){ 
-            var msg = {
-                to:this.props.chat,
-                payload:{
-                    msgFrm:this.props.mydata.userid,
-                    message:this.state.composed,
-                    timestamp:new Date(),
-                    flag:0
+        const ts=new Date().getTime().toString()
+        if (this.state.composed.length>=1 || this.state.picmsg){ 
+            var msg,msg1;
+            if(String(this.props.chat).length>5){
+                msg = {
+                    to:this.props.chat,
+                    payload:{
+                        msgFrm:this.props.mydata.userid,
+                        message:this.state.composed,
+                        media:this.state.picmsg,
+                        timestamp:new Date(),
+                        flag:0
+                    },
+                    ts:ts
+                }
+                msg1 = {
+                    to:this.props.chat,
+                    payload:{
+                        msgFrm:this.props.mydata.userid,
+                        message:this.state.composed,
+                        media:this.state.picbase,
+                        timestamp:new Date(),
+                        flag:0
+                    },
+                    ts:ts
                 }
             }
-            this.props.addMessage(msg)
-            this.setState({
-                composed:''
-            })
-
-            //socket
-            var socketId=(Number(this.props.chat)<Number(this.props.mydata.phone))?String(this.props.chat)+'and'+String(this.props.mydata.phone):
-            String(this.props.mydata.phone)+'and'+String(this.props.chat)
-// var socketId='hhhh'
-            const client = this.props.sockets[socketId]
-            // client.on('connect', function () { 
-            //     console.log('connected',socketId)
-            client.emit('message', msg);
-            console.log('emited',socketId)
-        // });
-            // console.log('client',client)
-            // client.onopen = () => {
-            //     client.send('heeeyyy')
-            //     console.log('WebSocket Client Connected');
-            //   };
-            //   client.onmessage = (message) => {
-            //     console.log('recived',message);
-            //   };
-            //   client.send('hello');
-            //   client.onclose = ()=>{
-            //       console.log('closed')
-            //   }
-
-
-        fetch('http://localhost:8080/newmessage',{
-            method:'POST',
-            mode:'cors',
-            headers:{'Content-Type': 'application/json; charset=utf-8'},
-            body:JSON.stringify({
-                'phone':this.props.chat,
-                'token':localStorage.getItem('whatsapp').slice(1,-1),
-                'message':this.state.waiting
-            })
-        }
-
-        ).then(res => res.json())
-        .then(data => {
-            this.setState({
-                waiting:''
-            })
-            console.log('log...',data)
-            if(data.status){
-
-                this.props.setFlag(this.props.chat)
+            else{
+                msg = {
+                    grpto:this.props.chat,
+                    payload:{
+                        msgFrm:this.props.mydata.userid,
+                        phone:this.props.mydata.phone,
+                        message:this.state.composed,
+                        media:this.state.picmsg,
+                        timestamp:new Date(),
+                        flag:0
+                    },
+                    ts:ts
+                }
+                msg1 = {
+                    grpto:this.props.chat,
+                    payload:{
+                        msgFrm:this.props.mydata.userid,
+                        message:this.state.composed,
+                        media:this.state.picbase,
+                        timestamp:new Date(),
+                        flag:0
+                    },
+                    ts:ts
+                }
             }
-        })
+
+            
+            this.props.addMessage(msg1)
+            this.setState({
+                composed:'',
+                picmsg:'',
+                picbase:'',
+                picmsgvalue:''
+            })
+
+            this.props.sockets[this.props.mydata.phone].emit('chat-message',{
+
+                // grpid:(Number(this.props.chat)?null:),
+                token:localStorage.getItem('whatsapp').slice(1,-1),
+                msg:msg
+            })
+     
+
     }}
 
+
+        toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+
+    
     render() { 
         return ( 
-            <div className='Compose'>
-                <i className="far fa-smile-beam"></i>
+            <div className='Compose'> 
+                <i className="far fa-smile-beam"  onClick={this.triggerClick}></i>
                 <input type='text' name='compose' minLength='1' maxLength='512' value={this.state.composed} onChange={this.handleChange} placeholder='Compose message...'/>
+                <input type='file' name='picmsg' onChange={this.handleImage} value={this.state.picmsgvalue}style={{paddingLeft:'1em',maxWidth:'16vw'}}></input>
                 <i className="far fa-paper-plane" onClick={this.sendMsg}></i>
             </div>
          );

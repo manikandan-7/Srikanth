@@ -66,3 +66,21 @@
     text-align: right;
     color: gray;
 }
+.showMedia {
+    display: block;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+    /*! justify-content: center; */align-items: center;
+}
+
+.showMedia img {
+    width: 45%;
+    margin: 18px;
+    /*! border: 2px solid; */
+    box-shadow: -1px 0px 6px 0px rgba(0,0,0,0.75);
+    /* display: inline; */
+    /*! justify-content: center; */
+    height: 50%;
+}

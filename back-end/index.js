@@ -3,15 +3,34 @@ const express = require('express');
 const cors = require('cors')
 const app = express();
 const User = require('./model/User')
+const Group = require('./model/Group')
+const Grpmsg = require('./model/Grpmsg')
 const Messages = require('./model/Message')
+const fs = require('fs')
+const base_url=require('./config/host')
+
 const Message = Messages.Message
 const getContacts = Messages.contacts
 const initialfetch = Messages.initialfetch
 const markAsRead = Messages.markAsRead
+
+var multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function(req,file,cb){
+        cb(null,'./Images')
+    },
+    filename: function(req,file,cb){
+        cb(null,file.originalname)
+        // fileName=''
+    }
+})
+// var fileName;
+var upload = multer({storage:storage});
+
 require('express-ws')(app);
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-// io.set('origins', 'http://localhost*');
+
 server.listen(8080)
 console.log('listining in port 8080')
 
@@ -21,21 +40,83 @@ app.use( express.json({limit:'1mb'}));
 app.use(express.urlencoded({ extended: false }))
 app.use('/images', express.static(__dirname + '/Images'));
 app.use(cors())
-// app.use((req,res)=>{
-//     res.header('Access-Controll-Allow-Origin','*')
-//     res.header('Access-Controll-Allow-Headers','*')
-// })
-var sockets={}
 
-// app.ws('/99525687138072251714', function(ws, req) {
-//     ws.on('open', ()=> {
-//         console.log('opend')
-//     });
-//     ws.on('message',(msg)=>{
-//         console.log('recived',msg)
-//         ws.send('hello world')
-//     })
-//   });
+
+var sockets={}
+init=()=>{
+    const user = new User()
+    user.getAllPhone().then(res=>{
+        res.details.forEach(element=>{
+            createSocket(element.phone)
+        })
+    })
+}
+init()
+
+createSocket=(phone)=>{
+    if(!sockets[phone])
+            {
+                console.log('creating socket for',phone)
+                sockets[phone]=io.of(phone).on('connection', function (socket) {
+                    console.log('connection got',phone)
+
+                    socket.on('init',(data)=>{
+                        getInit(data.token).then(res => {
+                            socket.emit('initial-response',res)
+                        })
+                    })
+
+                    socket.on('chat-message',(data)=>{
+                        console.log('recived payload',data)
+                        if(Number(data.msg.to)){
+                            newmessage(data).then(res =>{
+                                console.log('...',res)
+                                socket.emit('chat-message-response',res)
+                            })
+                        }
+                        else{
+                            newGroupMessage(data).then(res=>{
+                                if(res){
+                                    socket.emit('chat-message-response',{status:res})
+                                }
+                            })
+                        }
+
+                    })
+                    socket.on('newchat',(data)=>{
+                        console.log('new chat',data)
+                        newchat(data).then(res => {
+                            console.log('response for new chat',res)
+                            socket.emit('newchat-response',res)
+                        }
+                        )
+                    })
+
+                    socket.on('set-flag-2',(data)=>{
+                        sockets[data.to].emit('set-flag-2',data.from)
+                    })
+                    socket.on('create-group',(data)=>{
+                        createGroup(data).then(res => {
+                            socket.emit('create-group-response',res.status)
+                        })
+                    })
+                    socket.on('add-member-to-group',(data)=>{
+                        addMembers(data).then(res =>{
+                            socket.emit('add-to-group-response',res)
+                            if(res.status){
+                                getnewgrp(data).then(res=>{
+                                    sockets[data.phone].emit('new-incoming-group',res)
+                                })
+                            }
+                        })
+                    })
+                    // socket.on('i-recived',(data)=>{
+
+                    // })
+                  });
+            }
+}
+
 
 
 app.post('/login',(req,res)=>{
@@ -57,6 +138,8 @@ app.post('/login',(req,res)=>{
                     data:token
 
                 });
+            
+
         }
 
         else
@@ -64,106 +147,239 @@ app.post('/login',(req,res)=>{
     })
 })
 
-app.post('/signup',(req,res)=>{
+app.post('/signup',upload.single('img'),(req,res)=>{
     user= new User();
     user.name=req.body.name;
     user.phone=req.body.phone;
     user.password=req.body.password;
-    user.profile=req.body.profile;
+    if(req.file)
+    user.profile=req.file.originalname;
     user.create().then(
         log =>{
+            // phone = req.body.phone
+            if(log.status) createSocket(req.body.phone)
             res.send(log)
         });
 
 })
 
-app.post('/newchat',(req,res)=>{
-    var user = new User()
+newGroupMessage=(data)=>{
+    let dt;
+    return new Promise((resolve,reject)=>{
+        try{
+            const from = jwt.verify(data.token,key)
+            var msg = new Grpmsg()
+            var grp = new Group()
+            // console.log(data.msg.to)
+            grp.grpid = data.msg.grpto
+            msg.grpFrom = from.userid
+            msg.grpTo = data.msg.grpto
+            data.msg.payload.groupFrm = from.phone
+            grp.get().then(res=>{
+                if(data.msg.payload.media){
+                    dt = new Date().getTime().toString()
+                    fs.appendFileSync('Images/msg/'+dt, new Buffer(data.msg.payload.media));
+                }
+                
+                msg.message = data.msg.payload.message
+                msg.media = (dt)?dt:''
+                data.msg.payload.media = msg.media
+                res.id.forEach(element=>{
+                    sockets[element.phone].emit('chat-message',data.msg)
+                })
+                msg.send().then(out =>{
+                    resolve (out)
+                })
+            })
+
+        }
+        catch{
+            resolve({status:false,details:'token verify failed'})
+        }
+    })
+}
+
+getnewgrp=(data)=>{
+    return new Promise((resolve,reject)=>{
+        var grp = new Group()
+        grp.getGrp(data.grpid,data.phone).then(res=>
+            resolve(res)
+        )
+    })
+}
+
+createGroup= (data)=>{
+    return new Promise((resolve,reject)=>{
+        try{
+            const from = jwt.verify(data.token,key)
+            var grp = new Group()
+            grp.admin = from.userid
+            grp.name = data.group
+            grp.create().then(log=>
+                resolve(log))
+        }
+        catch{
+            reject ({status:false,details:'cannot verify token'})
+        }
+    })
+}
+
+addMembers = (data) =>{
     try{
-        const from = jwt.verify(req.body.token,key)
-        user.phone = req.body.phone
-        if (req.body.phone!=from.phone)
-        {
-            user.get().then(log =>{
-                if(log.status)
-                res.send({
-                    status:true,
-                    data:{
-                    userid:log.data.userid,
-                    phone:log.data.phone,
-                    name:log.data.name,
-                    profile:log.data.profile
-                }})
-                else
-                res.send(log)
+        const from = jwt.verify(data.token,key)
+        return new Promise((resolve,reject)=>{
+            var user = new User()
+            user.phone = data.phone
+            user.get().then(res =>{
+                if(res.status){
+                    // data[id=res.data.userid
+                    user.userid=res.userid
+                    if(res.data.phone==from.phone){
+                        resolve({status:false,details:'You already in group'})
+                    }
+                    else{
+                        user.addToGroup(data.grpid,res.data.userid).then( out=>
+                            resolve(out)
+                        )
+                    }
+                }
+                else{
+                    resolve ({status:false,details:'cannot find user'})
+                }
+            })
+        })
+    }
+    catch{
+        resolve({status:false,details:'token verify failed'})
+    }
+
+}
+
+newchat = (data)=>{
+    return new Promise((resolve,reject)=>{
+        var user = new User()
+        try{
+            const from = jwt.verify(data.token,key)
+            console.log('token verified')
+            user.phone = data.phone
+            user.id = data.id
+            console.log(data)
+            if (data.phone!=from.phone)
+            {
+                user.get().then((log) =>{
+                    if(log.status)
+                    resolve ({
+                        status:true,
+                        data:{
+                        userid:log.data.userid,
+                        phone:log.data.phone,
+                        name:log.data.name,
+                        profile:log.data.profile
+                    }})
+                    else{
+                        resolve (log)
+                    }
+                })
+            }
+            else{
+            resolve ({status:false,details:'you cannot send message to yourself'})
+            }
+        }
+        catch{
+            resolve ({status:false, details:'could not verify token'})
+        }
+    })
+   
+}
+
+getInit=(token)=>{
+    return new Promise((resolve,reject)=>{
+        try{
+            const from = jwt.verify(token,key)
+            console.log('token verified')
+            let user = new User()
+            user.userid = from.userid
+            user.getContacts().then(res=>{
+                if(res.status){
+                    user.getGroups().then((res1)=>{
+                        if(res1.status){
+                            const contacts = {status:true,data:res.data.concat(res1.data)}
+                            let prom=[]
+                            let chat = {}
+                            contacts.data.forEach((element)=>{
+                                if(element.userid){
+                                    prom.push(
+                                    initialfetch(from.userid,element.userid,0,0).then(res=>{
+                                        chat[element.phone] = res.reverse()
+                                        // console.log(res,chat)
+                                    }))
+                                }
+                                else if(element.grpid){
+                                    const grp = new Grpmsg()
+                                    prom.push(
+                                        grp.get(0,element.grpid,0).then(res=>{
+                                            chat[element.grpid] = res.reverse()
+                                        })
+                                    )
+                                }
+                                
+
+                            })
+                            Promise.all(prom).then(res=>{
+                                resolve({status:true,data:{contacts:contacts.data,messages:chat}})
+                            })
+                        }
+                    })
+                }
             })
         }
-        else{
-        res.send({status:false,details:'you cannot send message to yourself'})
+        catch{
+            resolve ({status:false,details:'cannot verify token'})
         }
-    }
-    catch{
-        res.send({status:false, details:'could not verify token'})
-    }
-})
+    })
+    
+}
 
-app.post('/getcontacts',(req,res)=>{
-    try{
-        const from = jwt.verify(req.body.token,key)
-        getContacts(from.userid).then(log =>{
-            res.send({contacts:log})
-                //creating socket
-                log.forEach(element=>{
+// app.post('/getcontacts',(req,res)=>{
+//     try{
+//         const from = jwt.verify(req.body.token,key)
+//         getContacts(from.userid).then(log =>{
+//             res.send({contacts:log})
+//                 //creating socket
+//                 log.forEach(element=>{
 
-                    var socketId=(Number(from.phone)<Number(element.phone))?String(from.phone)+'and'+String(element.phone):
-                    String(element.phone)+'and'+String(from.phone)
-                    if(!sockets[socketId])
-                    sockets[socketId]=io.of(socketId).on('connection', function (socket) {
-                        console.log('connection got',socketId)
-                        socket.on('message',(data)=>{
-                            socket.broadcast.emit('chat-message',data)
-                            console.log('message',socketId,data)
-                        })
-                      });
-                    // sockets[socketId]=app.ws('/'+socketId,(ws,req)={})
-                    // var socketId = 'hhhh'
-                    // if(!sockets[socketId]){
+//                     var socketId=(Number(from.phone)<Number(element.phone))?String(from.phone)+'and'+String(element.phone):
+//                     String(element.phone)+'and'+String(from.phone)
+//                     if(!sockets[socketId])
+//                     sockets[socketId]=io.of(socketId).on('connection', function (socket) {
+//                         console.log('connection got',socketId)
+//                         socket.on('message',(data)=>{
+//                             socket.emit('chat-message',data)
+//                             console.log('message',socketId,data)
+//                         })
+//                       });
+                    
 
-                        // sockets[socketId]=  app.ws('/'+socketId, function(ws, req) {
-                        //     ws.on('open', ()=> {
-                        //         console.log('opend')
-                        //     });
-                        //     ws.on('message',(msg)=>{
-                        //         console.log('recived',JSON.parse(msg),req.path)
-                        //         ws.send(msg)
-                        //     })
-                        //     ws.on('close',()=>{
-                        //         console.log('closed socket')
-                        //     })
-                            
-                        //   });
-                    // }
-                    // else{
-                    //     sockets[socketId].on('message',(msg)=>{
-                    //         console.log('recived without creating',JSON.parse(msg),req.path)
-                    //         sockets[socketId].send(msg)
-                    //     })
+//                 })
+//         })
 
-                    // }
-                   
-                //    console.log(sockets[socketId])
-
-                // console.log()
-
-                })
-                //end creating socket
-        })
-
-    }
-    catch{
-        res.send({status:false,details:'cannot verify'})
-    }
-})
+//     }
+//     catch{
+//         res.send({status:false,details:'cannot verify'})
+//     }
+// })
+// app.post('/getgroups',(req,res)=>{
+//     try{
+//         const from = jwt.verify(req.body.token,key)
+//         var user = new User()
+//         // user.phone = from.phone
+//         user.getGroups(from.userid).then(out=> {
+//             res.send(out)})
+//     }
+//     catch{
+//         res.send({status:false,details:'cannot verify token'})
+//     }
+// })
 
 app.post('/initialfetch',(req,res)=>{
     try{
@@ -176,6 +392,63 @@ app.post('/initialfetch',(req,res)=>{
     }
 })
 
+app.post('/search',(req,res)=>{
+    try{
+        const from = jwt.verify(req.body.token,key)
+        const to = req.body.id
+        if(String(to.length)>5){
+            let msg = new Message()
+            msg.msgFrm = from.userid
+            msg.msgTo = to
+            msg.search(req.body.search).then(out=>{
+                res.send(out)
+            })
+        }
+    }
+    catch{
+        res.send({status:false,details:'token cannot be verified'})
+    }
+})
+
+app.post('/getmedia',(req,res)=>{
+    try{
+        const from = jwt.verify(req.body.token,key)
+        const to = req.body.id
+        if(String(to).length>5){
+            let msg = new Message()
+            msg.msgFrm=from.userid
+            msg.msgTo=to
+            msg.getmedia().then(out =>{
+                res.send(out)
+            })
+        }
+        else{
+            let msg = new Grpmsg()
+            msg.grpFrom=from.userid
+            msg.grpTo=to
+            msg.getmedia().then(out =>{
+                res.send(out)
+            })
+        }
+    }
+    catch{
+        res.send({status:false,details:'cannot verify token'})
+    }
+})
+
+// app.post('/grpmsgfetch',(req,res)=>{
+//     try{
+//         const from = jwt.verify(req.body.token,key)
+//         grp = new Grpmsg()
+//         grp.get(req.body.start,req.body.grpid,req.body.msgid).then(out=>
+//             res.send(out))
+//     }
+//     catch{
+//         res.send({status:false,details:'cannot verify token'})
+//     }
+// })
+
+
 app.post('/markasread',(req,res)=>{
     try{
         const from = jwt.verify(req.body.token,key)
@@ -187,51 +460,55 @@ app.post('/markasread',(req,res)=>{
     }
 })
 
-app.post('/newmessage',(req,res)=>{
-    try{
-        const from = jwt.verify(req.body.token,key)
-        var to = new User()
-        to.phone = req.body.phone
-        to.get().then(log =>{
-            if(log.status && log.data.userid!=from.userid){
-                message = new Message()
-                message.msgFrm = from.userid
-                message.msgTo = log.data.userid
-                message.message = req.body.message
-                message.send().then(log=>{
-                    res.send(log)
-                })
-            }
-            else{
-                res.send({status:false,details:'invalid source or destination'})
-            }
-        })
-    }
-    catch{
-        res.send({status:false,details:'token error'})
-    }
-})
 
 
+newmessage = (msg)=>{
+    let dt;
+    // console.log(msg)
+    return new Promise((resolve,reject)=>{
+        try{
+            const from = jwt.verify(msg.token,key)
+            var to = new User()
+            to.phone = msg.msg.to
+            to.get().then(log =>{
+                if(msg.msg.payload.media){
+                    dt = new Date().getTime().toString()
+                    fs.appendFileSync('Images/msg/'+dt, new Buffer(msg.msg.payload.media));
+                }
+                if(log.status && log.data.userid!=from.userid){
+                    message = new Message()
+                    message.msgFrm = from.userid
+                    message.msgTo = log.data.userid
+                    message.message = msg.msg.payload.message
+                    message.media = (dt)?dt:''
+                    message.send().then(log=>{
+                        // var socketId=(Number(from.phone)<Number(msg.phone))?String(from.phone)+'and'+String(msg.phone):
+                        // String(msg.phone)+'and'+String(from.phone)
+                        // sockets[socketId].send(log)
+                        // console.log(log)
+                        if(log.status){
+                            const temp ={
+                                from:from.phone,
+                                msg:message.message,
+                                timestamp:msg.msg.payload.timestamp,
+                                flag:1
+                            }
+                            msg.msg.payload.media=message.media
+                            sockets[msg.msg.to].emit('chat-message',msg.msg)
+                        }
+                        resolve (log)
+                    })
+                }
+                else{
+                    resolve ({status:false,details:'invalid source or destination'})
+                }
+            })
+        }
+        catch{
+            reject ({status:false,details:'token error'})
+        }
+    })
+    
+}
 
-// const webSocketServer = require('websocket').server;
-// const wsServer = new webSocketServer({
-//     httpServer: app
-//   });
-//   const clients = {};
-
-//   // This code generates unique userid for everyuser.
-//   const getUniqueID = () => {
-//     const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-//     return s4() + s4() + '-' + s4();
-//   };
-  
-//   wsServer.on('request', function(request) {
-//     var userID = getUniqueID();
-//     console.log((new Date()) + ' Recieved a new connection from origin ' + request.origin + '.');
-//     // You can rewrite this part of the code to accept only the requests from allowed origin
-//     const connection = request.accept(null, request.origin);
-//     clients[userID] = connection;
-//     console.log('connected: ' + userID + ' in ' + Object.getOwnPropertyNames(clients))
-//   });
 

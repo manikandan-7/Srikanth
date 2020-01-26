@@ -4,7 +4,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { Route, BrowserRouter as Router } from 'react-router-dom'
 import Signup from './components/login/Signup';
-import Login from './components/login/Login';
+// import Login from './components/login/Login';
 import {createStore} from 'redux'
 import MessageReducer from './reducer/MessageReducer'
 import { Provider } from 'react-redux';
@@ -15,7 +15,7 @@ const routing = (
         <switch>
             <Route exact path='/' component={App}/>
             <Route path='/signup' component={Signup}/>
-            <Route path='/login' component={Login}/>
+            {/* <Route path='/login' component={Login}/> */}
 
         </switch>
     </Router>

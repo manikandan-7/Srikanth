@@ -2,6 +2,7 @@ import React,{Component} from 'react'
 // import axios from 'axios'
 import './Login.css'
 import { Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
 
 
 // const image2base64 = require('image-to-base64')
@@ -23,7 +24,7 @@ class Signup extends Component {
 
 
     login=(e)=>{
-        fetch('http://localhost:8080/login',{
+        fetch(this.props.host+'/login',{
             method:'POST',
             mode:'cors',
             headers:{'Content-Type': 'application/json; charset=utf-8'},
@@ -47,16 +48,20 @@ class Signup extends Component {
     
 
     signup=(e)=>{
-        fetch('http://localhost:8080/signup',{
+        let data = new FormData()
+        data.append('phone',this.state.phone)
+        data.append('password',this.state.password)
+        data.append('name',this.state.name)
+        if(this.state.profile)
+        data.append('img',this.state.profile,this.state.phone)
+        fetch(this.props.host+'/signup',{
             method:'POST',
             mode:'cors',
-            headers:{'Content-Type': 'application/json; charset=utf-8'},
-            body:JSON.stringify({
-                'phone':this.state.phone,
-                'password':this.state.password,
-                'name':this.state.name,
-                'profile':this.state.profile
-            })
+            // file:{
+            //     img:this.state.profile
+            // },
+           
+            body:data
             
         }).then(res => res.json())
         .then(data => {
@@ -74,22 +79,27 @@ class Signup extends Component {
         })
     }
 
-    toBase64 = file => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
+    // toBase64 = file => new Promise((resolve, reject) => {
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(file);
+    //     reader.onload = () => resolve(reader.result);
+    //     reader.onerror = error => reject(error);
+    // });
 
     handleProfileChange=(e)=>{
-        this.toBase64(e.target.files[0]).then(
-            res=>{
-                this.setState({
-                    profile: res
-                })
 
-            }
-        )
+    
+        this.setState({
+            profile:e.target.files[0]
+        })
+        // this.toBase64(e.target.files[0]).then(
+        //     res=>{
+        //         this.setState({
+        //             profile: res
+        //         })
+
+        //     }
+        // )l
     }
 
     render() { 
@@ -125,6 +135,5 @@ class Signup extends Component {
          );
     }
 }
- 
-export
- default Signup;
+const mapStateToProps = (state) => { return { host:state.host }}
+export default connect(mapStateToProps) (Signup);
