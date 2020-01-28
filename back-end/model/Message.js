@@ -73,10 +73,28 @@ class Message{
     async search(search){
         return new Promise((resolve,reject)=>{
             // const q = `select * from msg where ((msgFrm=${this.msgFrm} and msgTo=${this.msgTo}) || (msgFrm=${this.msgTo} and msgTo=${this.msgFrm})) and message like '%${search}%' order by timestamp`
-            const q = `select * from msg inner join auth on (msg.msgFrm=auth.userid or msg.msgTo=auth.userid) where ((msgFrm=${this.msgFrm} and auth.phone=${this.msgTo}) || (auth.phone=${this.msgTo} and msgTo=${this.msgFrm})) and message like '%${search}%' order by timestamp`
+            const q = `select msgid from msg inner join auth on (msg.msgFrm=auth.userid or msg.msgTo=auth.userid) where ((msgFrm=${this.msgFrm} and auth.phone=${this.msgTo}) || (auth.phone=${this.msgTo} and msgTo=${this.msgFrm})) and message like '%${search}%' order by timestamp`
             conn.query(q,(err,res)=>{
-                // console.log(q)
-                if(err) resolve({status:false,details:'error in search'})
+                console.log('search',q)
+                if(err){
+                    console.log(err)
+                    resolve({status:false,details:'error in search'})
+                } 
+                    
+                else resolve({status:true,details:res})
+            })
+        })
+    }
+    searchten(search){
+        return new Promise((resolve,reject)=>{
+            const q = `select * from msg inner join auth on (msg.msgFrm=auth.userid or msg.msgTo=auth.userid) where ((msgFrm=${this.msgFrm} and auth.phone=${this.msgTo}) || (auth.phone=${this.msgTo} and msgTo=${this.msgFrm})) and msgid>=${search} order by timestamp limit 10`
+            conn.query(q,(err,res)=>{
+                console.log('search 10',q)
+                if(err){
+                    console.log(err)
+                    resolve({status:false,details:'error in search'})
+                } 
+                    
                 else resolve({status:true,details:res})
             })
         })

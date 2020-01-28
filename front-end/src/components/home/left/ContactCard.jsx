@@ -33,7 +33,8 @@ class ContactCard extends React.Component {
                         {(this.props.details.phone)?this.props.details.phone:this.props.details.name}
                     </div>
                     <div className='Preview'>
-                        {(this.props.details.phone)?this.props.details.name:'GROUP'}
+                        {console.log('..//??//..',this.props.messages[this.props.details.grpid])}
+                        {(this.props.messages[this.props.details.phone])?this.props.messages[this.props.details.phone][this.props.messages[this.props.details.phone].length-1].message:(this.props.messages[this.props.details.grpid]!=undefined &&this.props.messages[this.props.details.grpid].length)?(this.props.messages[this.props.details.grpid][this.props.messages[this.props.details.grpid].length-1].message):''}
                     </div>
 
                 </div>
@@ -41,6 +42,6 @@ class ContactCard extends React.Component {
          );
     }
 }
-const mapStateToProps = (state) => { return { chat: state.chat,host:state.host }}
+const mapStateToProps = (state) => { return { chat: state.chat,host:state.host,messages:state.messages }}
  
 export default connect(mapStateToProps)(ContactCard);

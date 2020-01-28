@@ -46,7 +46,7 @@ render() {
         return (
             
                 // this.props.details.chat.length ?
-                <HomeRight details={temp} mydata={this.props.mydata} onload={this.props.details.chat}/>
+                <HomeRight details={temp} rerender={this.props.rerender} mydata={this.props.mydata} onload={this.props.details.chat}/>
                 // :
                 // <HomeRight onload={false}/>
                 // <div className='HomeRight'><img src='/image.png' alt='' style={{width:'100%', height:'100%'}}></img></div>

@@ -32,6 +32,31 @@ class MyDetails extends React.Component {
             })
         }
     }
+
+    updateProfile=(e)=>{
+        this.setState({
+            newDp:e.target.files[0]
+        },()=>{
+            this.props.sockets[this.props.mydata.phone].emit('update-dp',{dp:this.state.newDp,
+            phone:this.props.mydata.phone})
+        })
+    }
+
+    //------------------------------------------------------
+    // onClick={this.createGroup}
+    //--------------------------------------------------------
+
+    updateName=()=>{
+        let name = prompt('Enter new name')
+        if(name!=null){
+            this.props.sockets[this.props.mydata.phone].emit('change-name',{
+                token:JSON.parse(localStorage.getItem('whatsapp')),
+                name:name
+            })
+        }
+
+    }
+
     createGroup=()=>{
         var grp = prompt('Enter group name to create')
         if(grp==null){            
@@ -50,9 +75,17 @@ class MyDetails extends React.Component {
     render() { 
         return ( 
             <div className='MyDetails'>
-                <img className='ProfilePic' src={`${this.props.host}/images/${this.props.mydata.profile}`} alt='cant load' onClick={this.createGroup}></img>
-        <div className='PhoneNumber'>{this.props.mydata.phone}</div>
+                <div className='dp'>
+
+                <label for='file-input'>
+                <img className='ProfilePic' src={`${this.props.host}/images/${this.props.mydata.profile}`} alt='cant load' ></img>
+
+            </label>
+            <input id='file-input' type='file' onChange={this.updateProfile}></input>
+                </div>
+        <div className='PhoneNumber' onClick={this.updateName}>{this.props.mydata.phone}</div>
                 <div className='MyDetailsIcon'>
+                <i class="fa fa-users" aria-hidden="true" onClick={this.createGroup}></i>
                     <i onClick={this.SearchContact} className='far fa-comment-alt' > </i>
                     <i class="fas fa-ellipsis-v" onClick={this.Logout}></i>
 

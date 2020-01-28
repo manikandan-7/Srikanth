@@ -42,6 +42,36 @@ class Grpmsg{
             })
         })
     }
+    searchten(search){
+        return new Promise((resolve,reject)=>{
+            const q = `select grpmsg.msgid from grpmsg inner join auth on grpmsg.grpFrom=auth.userid  where grpTo=${this.grpTo} and msgid>= '${search}' order by timestamp`
+            conn.query(q,(err,res)=>{
+                console.log('search 10',q)
+                if(err){
+                    console.log(err)
+                    resolve({status:false,details:'error in search'})
+                } 
+                    
+                else resolve({status:true,details:res})
+            })
+        })
+    }
+    async search(search){
+        return new Promise((resolve,reject)=>{
+            // const q = `select * from msg where ((msgFrm=${this.msgFrm} and msgTo=${this.msgTo}) || (msgFrm=${this.msgTo} and msgTo=${this.msgFrm})) and message like '%${search}%' order by timestamp`
+            // const q = `select * from grpmsg  where grpTo=${this.grpTo} and message like '%${search}%' order by timestamp`
+            const q = `select grpmsg.msgid from grpmsg inner join auth on grpmsg.grpFrom=auth.userid  where grpTo=${this.grpTo} and message like '%${search}%' order by timestamp`
+            conn.query(q,(err,res)=>{
+                // console.log(q)
+                if(err){
+                    console.log(err)
+                    resolve({status:false,details:'error in search'})
+                } 
+                    
+                else resolve({status:true,details:res})
+            })
+        })
+    }
     getmedia(){
         return new Promise((resolve,reject)=>{
             conn.query(`select grpmsg.media from auth join grpmsg on grpmsg.grpFrom=auth.userid where (grpTo=${this.grpTo}) && media!=''`,(err,res)=>{

@@ -19,7 +19,9 @@ class HomeRight extends React.Component {
             media:'',
             messages:{},
             search:'',
-            isMedia:false
+            isMedia:false,
+            recived:true,
+            current:0
         }
     }
 
@@ -60,6 +62,7 @@ fetchMessages=async(element,start)=>{
 })
 }
 componentWillReceiveProps(){
+    console.log('recived props in home right')
     this.setState({
         isMedia:false,
         search:'',
@@ -69,82 +72,6 @@ componentWillReceiveProps(){
     // alert('checking count')
 }
 
-addIncomingMessage=(msg)=>{
-    console.log('recived',msg)
-    var from;
-    if(msg.to){
-        console.log('recived private message')
-        this.props.contacts.forEach(element =>{
-            if(element.userid === msg.payload.msgFrm){
-                from = element.phone
-            }
-        })
-        var temp = this.state[from]
-        
-        if(!this.state[msg.to]){
-            this.props.sockets[this.props.mydata.phone].emit('newchat',{
-                token:JSON.parse(localStorage.getItem('whatsapp')),
-                id:msg.payload.msgFrm
-            })
-            this.props.contacts.forEach(element =>{
-                if(element.userid === msg.payload.msgFrm){
-                    from = element.phone
-                    temp = this.state[from]
-                    if(!temp){
-                        fetch(this.props.host+'/getgroups',{
-                            method:'POST',
-                            headers:{'Content-Type': 'application/json; charset=utf-8'},
-                            body:JSON.stringify({
-                                token: this.state.token
-                            })   
-                        }).then(res => res.json())
-                        .then(res => {
-                            console.log('testing',res)
-                            res.status&&
-                            res.groups.forEach(element=>{
-                                console.log('push',element)
-                                this.props.dispatch({
-                                    type:'add-contact',
-                                    data:element
-                                })
-                            })}).then(()=>{
-
-                                temp.push(msg.payload)
-                                this.setState({
-                                    [from]:temp
-                                })
-                            })
-                    }else{
-
-                        temp.push(msg.payload)
-                        this.setState({
-                            [from]:temp
-                        })
-                    }
-                }
-            })
-        }
-        else{
-            if(temp){
-                temp.push(msg.payload)
-                this.setState({
-                    [from]:temp
-                })
-            }
-        }
-    }
-    else if(this.props.mydata.userid!==msg.payload.msgFrm){
-        
-
-        temp = this.state[msg.grpto]
-        msg.payload.message = String(msg.payload.message)
-        console.log('recived group message',msg)
-        temp.push(msg.payload)
-        this.setState({
-            [from]:temp
-        })
-    }
-}
 
 
     addMessage=(msg)=>{
@@ -159,25 +86,52 @@ addIncomingMessage=(msg)=>{
                         payload:msg.payload
                     }
                 })
+                this.setState({
+                    recived:!this.state.recived
+                })
             // }, 100);
             
         }
-        // else if(msg.grpto){
+        else if(msg.grpto){
         //             temp = this.state[msg.grpto]?this.state[msg.grpto]:[]
         //             temp.push(msg.payload)
         //             setTimeout(() => {
         //                 this.setState({
         //                     [msg.grpto]:temp
         //                 })
-        //             }, 100);
+        //             }, 100); 
+        this.setState({
+            recived:true
+        })
+        // setTimeout(() => {
+            // alert(msg.grpto)
+                this.props.dispatch({
+                    type:'add-message',
+                    data:{
+                        id:msg.grpto,
+                        payload:msg.payload
+                    }
+                })
+            // }, 100);
+
                     
-        // }
+        }
         else{
             console.log('########## unable to determine message properties ############')
         }
     }
     setFlag2=(msg)=>{
 
+    }
+    next =()=>{
+        this.setState({
+            current:(this.state.current+1<=this.state.count)?this.state.current+1:this.state.current
+        },this.repeted())
+    }
+    prev=()=>{
+        this.setState({
+            current:(this.state.current-1>=1)?this.state.current-1:this.state.current
+        },this.repeted())
     }
 
     setFlag=(msg)=>{
@@ -190,6 +144,9 @@ addIncomingMessage=(msg)=>{
     }
 
     showMedia = ()=>{
+        this.setState({
+            search:''
+        })
         fetch(this.props.host+'/getmedia',{
             method:'POST',
             headers:{'Content-Type': 'application/json; charset=utf-8'},
@@ -206,6 +163,29 @@ addIncomingMessage=(msg)=>{
                 })
         })
     }
+
+    repeted =()=>{
+        if(this.state.count-this.state.current){
+        fetch(this.props.host+'/searchten',{
+            method:'POST',
+            headers:{'Content-Type': 'application/json; charset=utf-8'},
+            body:JSON.stringify({
+                token: JSON.parse(localStorage.getItem('whatsapp')),
+                id:this.props.chat,
+                search:this.state.msgids[this.state.current].msgid
+            })
+        }).then(res => res.json())
+        .then(data => {
+            this.setState({
+                searched:data.details
+            })
+        })}
+        else{
+            this.setState({
+                searched:[]
+            })
+        }
+    }
     showChat=()=>{
         this.setState({
             media:[],
@@ -213,7 +193,6 @@ addIncomingMessage=(msg)=>{
         })
     }
     search=(e)=>{
-
         this.setState({
             search:e
         },()=>{
@@ -230,9 +209,33 @@ addIncomingMessage=(msg)=>{
                     .then(res=> {
                         (res.status)&&
                         this.setState({
-                            searched:res.details
+                            msgids:res.details,
+                            count:res.details.length,
+                            current:(res.details.length)?1:0
+                            // searched:res.details
+                        },()=>{
+                            (this.state.count)&&
+                            fetch(this.props.host+'/searchten',{
+                                method:'POST',
+                                headers:{'Content-Type': 'application/json; charset=utf-8'},
+                                body:JSON.stringify({
+                                    token: JSON.parse(localStorage.getItem('whatsapp')),
+                                    id:this.props.chat,
+                                    search:this.state.msgids[this.state.current-1].msgid
+                                })
+                            }).then(res => res.json())
+                            .then(data => {
+                                this.setState({
+                                    searched:data.details
+                                })
+                            })
                         })
                     })
+            }
+            else{
+                this.setState({
+                    searched:[]
+                })
             }
         })
     }
@@ -245,12 +248,14 @@ addIncomingMessage=(msg)=>{
     //         messages:this.props.messages
     //     })
     // }
+
     render() {
+        console.log('rendered',this.props.messages[this.props.chat])
         return ( 
             Number(this.props.onload) ?
             <div className='HomeRight'>
-                <ContactDetails isMedia={this.state.isMedia} searchval={this.state.search} search={this.search} showMedia={this.showMedia} showChat={this.showChat} details={this.props.details} myid={this.props.mydata.userid} myphone={this.props.mydata.phone}/>
-                <MessageField search={this.state.search} fetchMessages={this.fetchMessages} chat={this.props.chat} show={(this.state.search.length)?this.state.searched:this.props.messages[this.props.chat]} mydata={this.props.mydata} media={this.state.media}/>
+                <ContactDetails next ={this.next} prev={this.prev} current={this.state.current} count={this.state.count} isMedia={this.state.isMedia} searchval={this.state.search} search={this.search} showMedia={this.showMedia} showChat={this.showChat} details={this.props.details} myid={this.props.mydata.userid} myphone={this.props.mydata.phone}/>
+                <MessageField rerender = {this.props.rerender} recived={this.state.recived} search={this.state.search} fetchMessages={this.fetchMessages} chat={this.props.chat} show={(this.state.search.length)?this.state.searched:this.props.messages[this.props.chat]} mydata={this.props.mydata} media={this.state.media}/>
                 {!this.state.isMedia&&<Compose addMessage={this.addMessage} setFlag={this.setFlag} mydata={this.props.mydata} sockets={this.state.sockets}/>}
                 
             </div>
@@ -260,4 +265,4 @@ addIncomingMessage=(msg)=>{
     }
 }
 const mapStateToProps = (state) => { return { contacts: state.contacts,chat: state.chat,sockets:state.sockets,host:state.host, messages:state.messages}}
-export default connect(mapStateToProps)(HomeRight);
+export default connect(mapStateToProps)(HomeRight); 

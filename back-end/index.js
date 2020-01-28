@@ -65,6 +65,11 @@ createSocket=(phone)=>{
                             socket.emit('initial-response',res)
                         })
                     })
+                    socket.on('update-dp',(data)=>{
+                        console.log(data.phone,'save')
+                        fs.writeFileSync('Images/'+data.phone, new Buffer(data.dp));
+                        socket.emit('update-dp-response',{status:true})
+                    })
 
                     socket.on('chat-message',(data)=>{
                         console.log('recived payload',data)
@@ -82,6 +87,11 @@ createSocket=(phone)=>{
                             })
                         }
 
+                    })
+                    socket.on('change-name',(data)=>{
+                        changeName(data).then(res=>{
+                            socket.emit('change-name-response',res)
+                        })
                     })
                     socket.on('newchat',(data)=>{
                         console.log('new chat',data)
@@ -117,7 +127,21 @@ createSocket=(phone)=>{
             }
 }
 
+changeName =(data)=>{
+    return new Promise((resolve,reject)=>{
+        try{
+            from = jwt.verify(data.token,key)
+            user = new User()
+            user.name = data.name
+            user.id = from.userid
+            user.updateName().then(res=> resolve(res))
+        }
+        catch{
+            resolve({status:false,details:'unauthorized access'})
+        }
 
+    })
+}
 
 app.post('/login',(req,res)=>{
     user = new User();
@@ -185,6 +209,7 @@ newGroupMessage=(data)=>{
                 msg.media = (dt)?dt:''
                 data.msg.payload.media = msg.media
                 res.id.forEach(element=>{
+                    element.phone!=from.phone &&
                     sockets[element.phone].emit('chat-message',data.msg)
                 })
                 msg.send().then(out =>{
@@ -401,6 +426,39 @@ app.post('/search',(req,res)=>{
             msg.msgFrm = from.userid
             msg.msgTo = to
             msg.search(req.body.search).then(out=>{
+                res.send(out)
+            })
+        }
+        else{
+            let msg = new Grpmsg()
+            msg.grpTo = to
+            msg.search(req.body.search).then(out=>{
+                res.send(out)
+            })
+        }
+    }
+    catch{
+        res.send({status:false,details:'token cannot be verified'})
+    }
+})
+
+app.post('/searchten',(req,res)=>{
+    try{
+        const from = jwt.verify(req.body.token,key)
+        const to = req.body.id
+        if(String(to.length)>5){
+            let msg = new Message()
+            msg.msgFrm = from.userid
+            msg.msgTo = to
+            msg.searchten(req.body.search).then(out=>{
+                res.send(out)
+            })
+        }
+        else{
+            let msg = new Grpmsg()
+            msg.grpTo = to
+            console.log(req.body)
+            msg.searchten(req.body.search).then(out=>{
                 res.send(out)
             })
         }

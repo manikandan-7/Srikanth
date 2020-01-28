@@ -16,8 +16,10 @@
         font-size: 4vh;
         color: grey;
 }
-.ContactDetailsIcon{
+.ContactDetailsIcon {
     margin-left: auto;
+    display: flex;
+    align-items: center;
 }
 .Compose {
     display: flex;
@@ -84,3 +86,24 @@
     /*! justify-content: center; */
     height: 50%;
 }
+.searchCounter {
+    display:flex;
+    margin: 0;
+    align-items: center;
+}
+.arrows {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+.arrows * {
+    cursor: pointer;
+    margin: 0;
+    font-weight: bold;
+    font-size: 1.1em;
+    width: 15px;
+}
+.searchCounter > div:nth-child(2) {
+    margin: 0;
+   }
+   

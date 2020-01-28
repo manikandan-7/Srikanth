@@ -17,7 +17,7 @@ class HomeLeft extends React.Component {
             <div className='HomeLeft'>
                 <MyDetails mydata={this.props.mydata}/>
                 <SearchContact handleChange={this.handleChange} search={this.state.search}/>
-                <ContactList search={this.state.search}/>
+                <ContactList rerender={this.props.rerender} search={this.state.search}/>
 
             </div>
          );

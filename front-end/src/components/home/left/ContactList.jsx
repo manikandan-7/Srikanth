@@ -15,7 +15,7 @@ class ContactList extends React.Component {
                     this.props.mycontacts.contacts &&
                     this.props.mycontacts.contacts.map(element=>(
                         // (element.phone && (element.phone.includes(this.props.search)) || element.name.includes(this.props.search))&&
-                        <ContactCard details={element}/>
+                        <ContactCard render={this.props.rerender} details={element}/>
                      ))
                 }
             </div>

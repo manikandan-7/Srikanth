@@ -30,6 +30,7 @@ const insert = (phone,password,profile,name)=>{
 const getUser = (phone,password,id) =>{
     return new Promise((resolve,reject)=> {
         const q = (password!='')?`select * from auth where phone='${phone}' and password='${password}'`:`select * from auth where phone='${phone}' || userid='${id}'`
+        console.log(q)
         conn.query(q, (err,result)=>{
             if(err) reject(false)
             else resolve(result)
@@ -46,6 +47,15 @@ class User{
         this.name=''
 }
 
+    updateName(){
+        const q = `update auth set name='${this.name}' where userid='${this.id}'`
+        return new Promise((resolve)=>{
+            conn.query(q,(err,res)=>{
+                if(err) resolve ({status:false,details:'error in updating name'})
+                else resolve ({status:true})
+            })
+        })
+    }
     async getGroups(){
         const q = ` select grp.grpid,grp.name,grpdetails.admin from grp inner join grpdetails on grp.grpid=grpdetails.grp where grpdetails.usr='${this.userid}'`
         return new Promise((resolve,reject)=>{

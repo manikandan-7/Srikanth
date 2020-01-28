@@ -25,14 +25,24 @@ class ContactDetails extends React.Component {
     }
     render() { 
         return ( 
-            <div className='ContactDetails' onDoubleClick={this.showMedia} >
+            <div className='ContactDetails'>
                 <img className='ProfilePic' src={(this.props.details.profile)?`${this.props.host}/images/${this.props.details.profile}`:this.props.host+'/images/nodp.jpeg'} alt='profile'></img>
-                <div className='PhoneNumber'>{(this.props.details.phone)?this.props.details.phone:this.props.details.name}</div>
+                <div className='PhoneNumber' onDoubleClick={this.showMedia}>{(this.props.details.phone)?this.props.details.name:this.props.details.name}</div>
                 
                 <div className='ContactDetailsIcon'>
+                    {(this.props.searchval.length)?
+                        <div className='searchCounter'>
+                            <div className='arrows'>
+                            <div onClick={this.props.prev}>▲</div>
+                            <div onClick={this.props.next}>▼</div>
+                            </div>
+                            <div>{this.props.current}/{this.props.count}</div>
+
+                        </div>:''}
+                    
                 {!this.props.isMedia ?<input type='text' placeholder='search' onChange={this.search} value={this.props.searchval} ></input>:<button onClick={this.showChat}>back</button>}
-                    <i className="fas fa-paperclip" onClick={this.addMembers}></i>
-                    <i className="fas fa-ellipsis-v"></i>
+                    {this.props.details.admin?<i className="fas fa-paperclip" onClick={this.addMembers}></i>:''}
+                    {/* <i className="fas fa-ellipsis-v"></i> */}
                 </div>
             </div>
          );
