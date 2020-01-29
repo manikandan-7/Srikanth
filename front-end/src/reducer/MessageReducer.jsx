@@ -1,4 +1,4 @@
-const MessageReducer = (state={contacts:[],chat:'',messages:{},sockets:{},host:'http://127.0.0.1:8080'},action)=>{
+const MessageReducer = (state={contacts:[],chat:'',messages:{},sockets:{},host:'http://localhost:8080'},action)=>{
     switch (action.type){
         case 'update-contact':
             return {contacts:action.data.contacts, chat:state.chat, messages:state.messages ,sockets:state.sockets,host:state.host}
@@ -40,7 +40,8 @@ const MessageReducer = (state={contacts:[],chat:'',messages:{},sockets:{},host:'
 
         case 'add-message':
             let temp1 = state.messages;
-            temp1[action.data.id].push(action.data.payload)
+            (temp1[action.data.id])?
+            temp1[action.data.id].push(action.data.payload):temp1[action.data.id]=[action.data.payload]
             return {contacts:state.contacts, chat:state.chat, messages:temp1, sockets:state.sockets, host:state.host}
 
         default:

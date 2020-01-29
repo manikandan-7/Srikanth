@@ -1,3 +1,97 @@
+:root{
+    --bgColor:rgba(196, 177, 177, 0.459);
+    --fontColor: black;
+}
+
+/* .HomeLeft {
+    width: 30%;
+    background-color: var(--bgColor);
+    color:var(--fontColor);
+    height: 100%;
+    box-shadow: 0px 0px 2px 1px var(--fontColor);
+}
+.ProfilePic {
+    height: 8vh;
+    border-radius: 100em;
+    width: 8vh;
+}
+.MyDetails {
+    display: flex;
+    align-items: center;
+    padding: 0.5em;
+    box-shadow: 0px 0px 2px 1px var(--fontColor);
+}
+.MyDetails i{
+    margin-right: 1em;
+    cursor: pointer;
+}
+.MyDetailsIcon{
+    margin-left: auto;
+}
+.SearchContact {
+
+    display: flex;
+    background : var(--bgColor);
+    height: 6vh;
+    align-items: center;
+    box-shadow: 0px 0px 2px 1px var(--fontColor);
+    overflow: hidden;
+}
+
+.SearchContact input {
+    background-color: var(--bgColor);
+    color:var(--fontColor);
+    filter: opacity(0.5);
+    border: none;
+}
+.SearchContact * {
+    padding: 10px;
+}
+.ContactList {
+    background-color: var(--bgColor);
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+    align-items: center;
+    width: 100%;
+    margin-top: 5px;
+    max-height: 77vh;
+}
+.ContactCard img {
+    height: 8vh;
+    border-radius: 100em;
+    width: 8vh;
+}
+.ContactCard {
+    background-color: var(--bgColor);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    border-bottom: 1px solid  var(--fontColor);
+    width: 95%;
+}
+.Preview {
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1vh;
+}
+.ContactCard > div:nth-child(2) {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.Name{
+    font-weight: bold;
+    color: var(--fontColor);
+}
+.PhoneNumber {
+    margin-left: 1em;
+    font-weight: bold;
+} */
+
+
 .HomeLeft {
     width: 30%;
     background-color: rgb(240, 230, 230);
@@ -82,6 +176,7 @@
     margin-left: 1em;
     font-weight: bold;
 }
+   
    
 .dp input{
     display: none;

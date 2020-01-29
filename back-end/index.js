@@ -6,6 +6,7 @@ const User = require('./model/User')
 const Group = require('./model/Group')
 const Grpmsg = require('./model/Grpmsg')
 const Messages = require('./model/Message')
+const Contacts = require('./model/Contacts')
 const fs = require('fs')
 const base_url=require('./config/host')
 
@@ -65,6 +66,7 @@ createSocket=(phone)=>{
                             socket.emit('initial-response',res)
                         })
                     })
+
                     socket.on('update-dp',(data)=>{
                         console.log(data.phone,'save')
                         fs.writeFileSync('Images/'+data.phone, new Buffer(data.dp));
@@ -88,25 +90,43 @@ createSocket=(phone)=>{
                         }
 
                     })
+                    socket.on('change-contact-name',(data)=>{
+                        changeContactName(data).then(res=>{
+                            res.desc={id:data.id,name:data.name}
+                            socket.emit('change-contact-name-response',res)
+                        })
+                    })
                     socket.on('change-name',(data)=>{
                         changeName(data).then(res=>{
                             socket.emit('change-name-response',res)
                         })
                     })
+                    socket.on('set-theme',(data)=>{
+                        setTheme(data).then(res=>{
+                            console.log(res)
+                            // socket.emit('set-theme-response',{to:data.})
+                        })
+                    })
                     socket.on('newchat',(data)=>{
-                        console.log('new chat',data)
                         newchat(data).then(res => {
-                            console.log('response for new chat',res)
+                            if(res.status){
+                                addContact(data).then(out=>{
+                                    console.log(out)
+                                })
+                            }
                             socket.emit('newchat-response',res)
                         }
                         )
+                    })
+                    socket.on('add-contact',(data)=>{
+                        console.log(data)
                     })
 
                     socket.on('set-flag-2',(data)=>{
                         sockets[data.to].emit('set-flag-2',data.from)
                     })
                     socket.on('create-group',(data)=>{
-                        createGroup(data).then(res => {
+                        createGroup(data).then(res => { 
                             socket.emit('create-group-response',res.status)
                         })
                     })
@@ -186,6 +206,25 @@ app.post('/signup',upload.single('img'),(req,res)=>{
         });
 
 })
+
+changeContactName=(data)=>{
+    return new Promise(resolve=>{
+        try{
+            from = jwt.verify(data.token,key)
+            let contact = new Contacts()
+            contact.contactFor=from.userid
+            contact.contactWith=data.id
+            contact.name=data.name
+            contact.update().then(res=>{
+                resolve(res)
+            })
+
+        }
+        catch{
+            resolve({status:false,details:'cannot verify token'})
+        }
+    })
+}
 
 newGroupMessage=(data)=>{
     let dt;
@@ -280,15 +319,14 @@ addMembers = (data) =>{
 
 }
 
+
 newchat = (data)=>{
     return new Promise((resolve,reject)=>{
         var user = new User()
         try{
             const from = jwt.verify(data.token,key)
-            console.log('token verified')
             user.phone = data.phone
             user.id = data.id
-            console.log(data)
             if (data.phone!=from.phone)
             {
                 user.get().then((log) =>{
@@ -365,46 +403,40 @@ getInit=(token)=>{
     
 }
 
-// app.post('/getcontacts',(req,res)=>{
-//     try{
-//         const from = jwt.verify(req.body.token,key)
-//         getContacts(from.userid).then(log =>{
-//             res.send({contacts:log})
-//                 //creating socket
-//                 log.forEach(element=>{
 
-//                     var socketId=(Number(from.phone)<Number(element.phone))?String(from.phone)+'and'+String(element.phone):
-//                     String(element.phone)+'and'+String(from.phone)
-//                     if(!sockets[socketId])
-//                     sockets[socketId]=io.of(socketId).on('connection', function (socket) {
-//                         console.log('connection got',socketId)
-//                         socket.on('message',(data)=>{
-//                             socket.emit('chat-message',data)
-//                             console.log('message',socketId,data)
-//                         })
-//                       });
-                    
 
-//                 })
-//         })
+addContact=(data)=>{
+    return new Promise(resolve=>{
+        try{
+            const from = jwt.verify(data.token,key)
+            let contact = new Contacts()
+            contact.contactFor = from.userid
+            const user = new User()
+            user.phone = data.phone
+            contact.name = data.phone
+            user.get().then(res=>{
+                if(res.status){
+                    contact.contactWith = res.data.userid
+                    contact.insert().then(out=>{
+                        contact.contactFor=res.data.userid
+                        contact.contactWith=from.userid
+                        contact.name=from.phone
+                        contact.insert().then(out1=>{
+                            resolve(out1)
+                        })
+                    })
+                }
+                else{
+                    resolve ({status:false,details:'error in fetching user details'})
+                }
+            })
 
-//     }
-//     catch{
-//         res.send({status:false,details:'cannot verify'})
-//     }
-// })
-// app.post('/getgroups',(req,res)=>{
-//     try{
-//         const from = jwt.verify(req.body.token,key)
-//         var user = new User()
-//         // user.phone = from.phone
-//         user.getGroups(from.userid).then(out=> {
-//             res.send(out)})
-//     }
-//     catch{
-//         res.send({status:false,details:'cannot verify token'})
-//     }
-// })
+        }
+        catch{
+            resolve({static:false,details:'token verication failed'})
+        }
+    })
+}
 
 app.post('/initialfetch',(req,res)=>{
     try{
@@ -531,6 +563,7 @@ newmessage = (msg)=>{
             to.get().then(log =>{
                 if(msg.msg.payload.media){
                     dt = new Date().getTime().toString()
+                    console.log(Array(msg.msg.payload.media).length)
                     fs.appendFileSync('Images/msg/'+dt, new Buffer(msg.msg.payload.media));
                 }
                 if(log.status && log.data.userid!=from.userid){
@@ -570,3 +603,22 @@ newmessage = (msg)=>{
 }
 
 
+setTheme=(data)=>{
+    return new Promise(resolve=>{
+        try{
+            from = jwt.verify(data.token,key)
+            let contact = new Contacts()
+            contact.contactWith= data.id
+            contact.contactFor = from.userid
+            contact.theme = data.theme
+            contact.setTheme().then(res =>{
+                resolve(res)
+            })
+        }
+        catch{
+            resolve({status:false,details:'token verify failure'})
+        }
+
+
+    })
+}

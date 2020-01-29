@@ -2,7 +2,22 @@ import React from 'react'
 import { connect } from 'react-redux';
 
 class ContactCard extends React.Component {
-    state = {  }
+    state = { 
+        
+     }
+
+    changeContactName=(e)=>{
+        const contact = prompt('Enter new name for contact',e.name)
+        if(contact==null){            
+        }
+        else{
+            this.props.sockets[this.props.mydata.phone].emit('change-contact-name',{
+                token:JSON.parse(localStorage.getItem('whatsapp')),
+                id:e.userid,
+                name:contact
+            })
+        }
+    }
 
     selectMe=(e)=>{
         console.log('hii',this.props.details.phone)
@@ -10,6 +25,9 @@ class ContactCard extends React.Component {
             type:'swap-contact',
             data:(this.props.details.phone)?this.props.details.phone:this.props.details.grpid
         })
+        // this.props.contacts[this.props.details.phone]
+        document.documentElement.style.setProperty('--bgColor',this.props.details.theme||'rgb(210, 210, 210)');
+            // document.documentElement.style.setProperty('--fontColor',this.invertHex(this.state.color));
         if(this.props.details.userid) {
             fetch(this.props.host+'/markasread',{
                 method:'POST',
@@ -23,14 +41,14 @@ class ContactCard extends React.Component {
         
     }
     render() { 
-        
+        console.log(this.props.updatedName,this.props.details.userid)
         return ( 
-            <div className='ContactCard' onClick={this.selectMe} style={{backgroundColor:(this.props.chat===this.props.details.phone || this.props.chat===this.props.details.grpid)?'grey':'white'}}>
+            <div className='ContactCard' onClick={this.selectMe} style={{backgroundColor:(this.props.chat===this.props.details.phone || this.props.chat===this.props.details.grpid)?'#bdbdbd':'white'}}>
                 <img src={(this.props.details.phone)?`${this.props.host}/images/${this.props.details.profile}`:`${this.props.host}/images/nodp.jpeg`} alt='profile'></img>
                 <div>
-                    <div className='Name'>
+                    <div className='Name'  onDoubleClick={(this.props.details.phone)&&(()=>this.changeContactName(this.props.details))} >
                         
-                        {(this.props.details.phone)?this.props.details.phone:this.props.details.name}
+                        {(this.props.updatedName[this.props.details.userid])||(this.props.details.phone)?this.props.details.name:this.props.details.name}
                     </div>
                     <div className='Preview'>
                         {console.log('..//??//..',this.props.messages[this.props.details.grpid])}
@@ -42,6 +60,6 @@ class ContactCard extends React.Component {
          );
     }
 }
-const mapStateToProps = (state) => { return { chat: state.chat,host:state.host,messages:state.messages }}
+const mapStateToProps = (state) => { return {sockets:state.sockets,contacts:state.contacts, chat: state.chat,host:state.host,messages:state.messages }}
  
 export default connect(mapStateToProps)(ContactCard);

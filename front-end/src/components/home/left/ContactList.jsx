@@ -8,14 +8,16 @@ class ContactList extends React.Component {
     //         contactList:this.props.contactList
     //     })
     // }
+    
     render() { 
+        console.log('inside contact list')
         return ( 
             <div className='ContactList'>
                 {
                     this.props.mycontacts.contacts &&
                     this.props.mycontacts.contacts.map(element=>(
-                        // (element.phone && (element.phone.includes(this.props.search)) || element.name.includes(this.props.search))&&
-                        <ContactCard render={this.props.rerender} details={element}/>
+                        (element.phone && (element.phone.includes(this.props.search)) || element.name.toLowerCase().includes(this.props.search.toLowerCase()))&&
+                        <ContactCard updatedName={this.props.updatedName} mydata={this.props.mydata} render={this.props.rerender} details={element}/>
                      ))
                 }
             </div>

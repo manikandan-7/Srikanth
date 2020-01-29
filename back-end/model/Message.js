@@ -70,7 +70,7 @@ class Message{
         this.flag=1
     }
     
-    async search(search){
+    search(search){
         return new Promise((resolve,reject)=>{
             // const q = `select * from msg where ((msgFrm=${this.msgFrm} and msgTo=${this.msgTo}) || (msgFrm=${this.msgTo} and msgTo=${this.msgFrm})) and message like '%${search}%' order by timestamp`
             const q = `select msgid from msg inner join auth on (msg.msgFrm=auth.userid or msg.msgTo=auth.userid) where ((msgFrm=${this.msgFrm} and auth.phone=${this.msgTo}) || (auth.phone=${this.msgTo} and msgTo=${this.msgFrm})) and message like '%${search}%' order by timestamp`

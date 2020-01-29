@@ -1,7 +1,102 @@
+/* .HomeRight {
+    height: 100%;
+    width:70%;
+    background-color: var(--bgColor);
+    box-shadow: 0px 0px 2px 1px var(--fontColor);
+    color: var(--fontColor);
+}
+.ContactDetails {
+    display: flex;
+    height: 10vh;
+    align-items: center;
+    background: var(--bgColor);
+    padding: 0 1vw;
+}
+.ContactDetailsIcon *{
+        background-color: var(--bgColor);
+        margin-right: 25px;
+        font-size: 4vh;
+        color: var(--fontColor);
+        border-radius: 5px;
+
+}
+.ContactDetailsIcon {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+.Compose {
+    display: flex;
+    margin-bottom: 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5em 1vw;
+    background: var(--bgColor);
+}
+.MessageField {
+    height: 77vh;
+    background: transparent;
+    display: flex;
+    overflow: scroll;
+    flex-direction: column;
+}
+.Compose > input:nth-child(2) {
+    border: none;
+    width: 60vw;
+    height: 2em;
+    background-color: var(--bgcolor);
+    color:var(--fontColor);
+}
+.RecivedMessage {
+    word-wrap: break-word;
+    padding: 1em;
+    width: max-content;
+    max-width: 50%;
+    background: var(--bgColor);
+    margin: 2px;
+    border-bottom-right-radius: 2em;
+    border-top-left-radius: 2em;
+    border-top-right-radius: 2em;
+    filter: invert(0.2) hue-rotate(90deg) sepia(0.3);
+}
+.SentMessage {
+    word-wrap: break-word;
+    padding: 1em;
+    width: max-content;
+    max-width: 50%;
+    background: var(--bgColor);
+    margin: 2px;
+    border-bottom-left-radius: 2em;
+    border-top-left-radius: 2em;
+    border-top-right-radius: 2em;
+    margin-left: auto;
+    filter: invert(0.2) hue-rotate(180deg) sepia(0.5);
+}
+.MessageTime{
+    text-align: right;
+    color: var(--fontColor);
+    filter: invert(0.1) hue-rotate(120deg) sepia(0.1);
+}
+.showMedia {
+    display: block;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+
+.showMedia img {
+    width: 45%;
+    margin: 18px;
+    box-shadow: -1px 0px 6px 0px var(--fontColor);
+    height: 50%;
+} */
+
 .HomeRight {
     height: 100%;
     width:70%;
-    background-color: rgb(223, 220, 215);
+    background-color: var(--bgColor);
     box-shadow: 0px 0px 2px 1px rgb(202, 200, 202);
 }
 .ContactDetails {
@@ -31,7 +126,7 @@
     background: white;
 }
 .MessageField {
-    height: 80vh;
+    height: 78vh;
     background: transparent;
     display: flex;
     overflow: scroll;
@@ -40,6 +135,7 @@
 .Compose > input:nth-child(2) {
     border: none;
     width: 60vw;
+    height: 2em;
 }
 .RecivedMessage {
     word-wrap: break-word;
@@ -68,24 +164,24 @@
     text-align: right;
     color: gray;
 }
+
 .showMedia {
     display: block;
     position: relative;
     height: 100%;
     width: 100%;
     flex-direction: column;
-    /*! justify-content: center; */align-items: center;
+    align-items: center;
 }
 
 .showMedia img {
     width: 45%;
     margin: 18px;
-    /*! border: 2px solid; */
     box-shadow: -1px 0px 6px 0px rgba(0,0,0,0.75);
-    /* display: inline; */
-    /*! justify-content: center; */
     height: 50%;
-}
+} 
+
+
 .searchCounter {
     display:flex;
     margin: 0;
@@ -105,5 +201,20 @@
 }
 .searchCounter > div:nth-child(2) {
     margin: 0;
+    margin-left:5px;
+}
+.dateStamp {   
+    display: flex;
+    justify-content: center;
+}
+.insideDatestamp {
+    background: white;
+    padding: 5px;
+    border-radius: 30px;
    }
    
+.searchChat {
+    
+    width: 15vw;
+    height: 3vh;
+}

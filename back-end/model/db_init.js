@@ -52,9 +52,16 @@ conn.connect((err)=>{
 			admin boolean
 		)`
 
-		
+		const contacts = `create table contacts
+		(
+			contactFor int,
+			constraint contactFor foreign key (contactFor) references auth(userid),
+			contactWith int,
+			constraint contactWith foreign key (contactWith) references auth(userid),
+			name varchar(60)
+		)`
 
-		Array(auth,msg,grp,grpmsg,grpdetails).forEach(element => {
+		Array(auth,msg,grp,grpmsg,grpdetails,contacts).forEach(element => {
 			conn.query(element,(error,result)=>{
 				if(error) console.log('table create error (file db_init.js)',error.sqlMessage)
 				else{

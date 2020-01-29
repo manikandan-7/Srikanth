@@ -14,7 +14,8 @@ class Home extends React.Component {
         this.state = { currentCard:'',
         token:JSON.parse(localStorage.getItem('whatsapp')),
         mydata:jwt.decode(JSON.parse(localStorage.getItem('whatsapp'))),
-        rerender:true
+        rerender:true,
+        updatedName:{}
          }
         
     }
@@ -91,6 +92,20 @@ class Home extends React.Component {
                 data.status &&
                 this.handleInit(data.data)
             })
+            this.props.sockets[this.state.mydata.phone].on('change-contact-name-response',(data)=>{
+                if(data.status){
+                    console.log(data)
+                    let temp = this.state.updatedName
+                    temp[data.desc.id]=data.desc.name
+                    this.setState({
+                        updatedName:temp
+                    })
+                    alert('contact name updated successfully')
+                }
+                else{
+                    alert(data.details)
+                }
+            })
             this.props.sockets[this.state.mydata.phone].emit('init',{
                 token:this.state.token
             })
@@ -114,7 +129,10 @@ class Home extends React.Component {
             this.props.sockets[this.state.mydata.phone].on('update-dp-response',(data)=>{
                 if(data.status){
                     alert('profile updated')
-                    window.location.reload()
+                    this.setState({
+                        rerender:!this.state.rerender
+                    })
+                    // window.location.reload()
                 }
                 else{
                     alert('profile update failure')
@@ -141,13 +159,21 @@ class Home extends React.Component {
                 // console.log('chat msg response',data)
                 if(data.status){
                             let temp = this.props.messages
-                            temp[this.props.chat][temp[this.props.chat].length-1].flag=1
+                            for(let i=0;i<temp[this.props.chat].length;i++){
+                                if(temp[this.props.chat][i].flag===0){
+                                    temp[this.props.chat][i].flag=1
+                                }
+                                if(i===temp[this.props.chat].length-1){
+                                    this.props.dispatch({
+                                        type:'set-contact',
+                                        data:temp
+                                    })
+                                }
+                            }
+                            // temp[this.props.chat][temp[this.props.chat].length-1].flag=1
                             // temp[-1].flag=1
 
-                            this.props.dispatch({
-                                type:'set-contact',
-                                data:temp
-                            })
+                            
                             setTimeout(() => {
                                 
                             this.setState({
@@ -287,7 +313,7 @@ class Home extends React.Component {
         return ( 
             <div className='Home'>
                 <div className='HomeContainer'>
-                    <HomeLeft rerender={this.state.rerender} mydata={this.state.mydata}/>
+                    <HomeLeft updatedName={this.state.updatedName} rerender={this.state.rerender} mydata={this.state.mydata}/>
                     <HomeRightContainer rerender={this.state.rerender} mydata={this.state.mydata}/>
                     </div>
             </div>

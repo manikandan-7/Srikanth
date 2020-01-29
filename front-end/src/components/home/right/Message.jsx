@@ -33,7 +33,7 @@ class Message extends React.Component {
                     {this.props.show.message}
                 </div>
                 <div className='MessageTime'>
-                    {new Date(this.props.show.timestamp).toLocaleString()}
+                    {new Date(this.props.show.timestamp).toLocaleTimeString()}
                     {
                         (this.props.myid === this.props.show.msgFrm) &&
                             this.getIcon(this.props.show.flag)

@@ -148,7 +148,9 @@ class User{
 
     getContacts(){
         return new Promise((resolve,reject)=>{
-            conn.query(`select distinct auth.* from auth inner join msg on (msg.msgFrm=auth.userid || msg.msgTo=auth.userid) where (msg.msgFrm=${this.userid} || msg.msgTo=${this.userid}) && auth.userid!=${this.userid};`,(err,res)=>{
+            // const q = `select distinct auth.* from auth inner join msg on (msg.msgFrm=auth.userid || msg.msgTo=auth.userid) where (msg.msgFrm=${this.userid} || msg.msgTo=${this.userid}) && auth.userid!=${this.userid};`
+            const q = `select distinct auth.userid,auth.phone,auth.profile,contacts.name,contacts.theme from auth inner join msg on (msg.msgFrm=auth.userid || msg.msgTo=auth.userid) inner join contacts on (contacts.contactFor=auth.userid || contacts.contactWith=auth.userid) where (msg.msgFrm=${this.userid} || msg.msgTo=${this.userid}) && auth.userid!=${this.userid} && contacts.contactFor=${this.userid};`
+            conn.query(q,(err,res)=>{
                 if (err) resolve({status:false,details:err})
                 else resolve({status:true,data:res})
             })

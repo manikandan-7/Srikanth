@@ -124,13 +124,15 @@ componentWillReceiveProps(){
 
     }
     next =()=>{
+        const temp = (this.state.current+1<=this.state.count)?this.state.current+1:this.state.current
         this.setState({
-            current:(this.state.current+1<=this.state.count)?this.state.current+1:this.state.current
+            current:temp
         },this.repeted())
     }
     prev=()=>{
+        const temp = (this.state.current-1>=1)?this.state.current-1:this.state.current
         this.setState({
-            current:(this.state.current-1>=1)?this.state.current-1:this.state.current
+            current:temp
         },this.repeted())
     }
 
@@ -214,21 +216,27 @@ componentWillReceiveProps(){
                             current:(res.details.length)?1:0
                             // searched:res.details
                         },()=>{
-                            (this.state.count)&&
-                            fetch(this.props.host+'/searchten',{
-                                method:'POST',
-                                headers:{'Content-Type': 'application/json; charset=utf-8'},
-                                body:JSON.stringify({
-                                    token: JSON.parse(localStorage.getItem('whatsapp')),
-                                    id:this.props.chat,
-                                    search:this.state.msgids[this.state.current-1].msgid
+                            if(this.state.count){
+                                fetch(this.props.host+'/searchten',{
+                                    method:'POST',
+                                    headers:{'Content-Type': 'application/json; charset=utf-8'},
+                                    body:JSON.stringify({
+                                        token: JSON.parse(localStorage.getItem('whatsapp')),
+                                        id:this.props.chat,
+                                        search:this.state.msgids[this.state.current-1].msgid
+                                    })
+                                }).then(res => res.json())
+                                .then(data => {
+                                    this.setState({
+                                        searched:data.details
+                                    })
                                 })
-                            }).then(res => res.json())
-                            .then(data => {
+                            }
+                            else{
                                 this.setState({
-                                    searched:data.details
+                                    searched:[]
                                 })
-                            })
+                            }
                         })
                     })
             }

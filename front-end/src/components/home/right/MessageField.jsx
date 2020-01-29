@@ -36,48 +36,11 @@ class MessageField extends React.Component {
     // componentWillReceiveProps(){
     //     alert('update')
     // }
-    isToday = (someDate) => {
-        const today = new Date()
-        return someDate.getDate() === today.getDate() &&
-          someDate.getMonth() === today.getMonth() &&
-          someDate.getFullYear() === today.getFullYear()
-      }
-      isYesterday = (someDate) => {
-        let yesterday = new Date()
-        yesterday.setDate(yesterday.getDate() - 1)
-        return someDate.getDate() === yesterday.getDate() &&
-          someDate.getMonth() === yesterday.getMonth() &&
-          someDate.getFullYear() === yesterday.getFullYear()
-      }
-      checkdates=(ts)=>{
-        //   alert(this.state.dates)
-            if(!this.state.dates.includes(new Date(ts).setHours(0,0,0,0))){
-                console.log('inside if',this.state.trigger)
-                let temp = this.state.dates
-                temp.push(new Date(ts).setHours(0,0,0,0))
-                this.setState({
-                    dateset:true,
-                    dates:temp,
-                    trigger:true
-                })
-                console.log(new Date(ts).setHours(0,0,0,0))
-                return new Date(ts).setHours(0,0,0,0)
-            }
-            else{
-                
-                // if(this.state.trigger){
-                //     console.log('inside else if', this.state.trigger)
-                //     this.state.trigger=false
-                // }
-                // this.setState({
-                //     dateset:false
-                // })
-            }
-      }
+
+
       
     
     render() { 
-        let dates=[]
         // alert(this.)
         
         return ( 
@@ -94,15 +57,22 @@ class MessageField extends React.Component {
                     </div>:'no media found'
                 :
                 this.props.show &&
-                this.props.show.map(element=>
+                this.props.show.map((element,index)=>{
+                    console.log(new Date(element.timestamp).setHours(0,0,0,0),'----',new Date(this.props.show[0].timestamp).setHours(0,0,0,0))
+                    
+                    if((this.props.show[index-1])&& new Date(element.timestamp).setHours(0,0,0,0)!==new Date(this.props.show[index-1].timestamp).setHours(0,0,0,0)){
+                        return <div><Datestamp date={element.timestamp}/>
+                        <Message rerender={this.props.rerender} show={element} myid={this.props.mydata.userid}/>
+                        </div>
+                    }
                     // (this.checkdates(element.timestamp).length)?'element':''||
                     // <div>
                     // <Datestamp date={
                     //    (this.state.trigger)? new Date(element.timestamp).setHours(0,0,0,0):undefined}>
                     //     </Datestamp>
-                    <Message rerender={this.props.rerender} show={element} myid={this.props.mydata.userid}/>
+                    return <Message rerender={this.props.rerender} show={element} myid={this.props.mydata.userid}/>
                     // </div>
-                )}
+    })}
             </div>
          );
     }
