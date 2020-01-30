@@ -136,7 +136,7 @@ class Compose extends React.Component {
                         msgFrm:this.props.mydata.userid,
                         phone:this.props.mydata.phone,
                         message:this.state.composed,
-                        media:this.state.picmsg,
+                        media:this.state.picmsg[0],
                         timestamp:new Date(),
                         flag:0
                     },
@@ -147,7 +147,7 @@ class Compose extends React.Component {
                     payload:{
                         msgFrm:this.props.mydata.userid,
                         message:this.state.composed,
-                        media:this.state.picbase,
+                        media:this.state.picbase[0],
                         timestamp:new Date(),
                         flag:0
                     },
@@ -168,8 +168,8 @@ class Compose extends React.Component {
         }
         this.setState({
             composed:'',
-            picmsg:'',
-            picbase:'',
+            picmsg:[],
+            picbase:[],
             picmsgvalue:''
         })
 

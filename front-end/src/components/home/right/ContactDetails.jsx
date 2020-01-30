@@ -10,7 +10,8 @@ class ContactDetails extends React.Component {
             this.props.sockets[this.props.myphone].emit('add-member-to-group',{
                 grpid:this.props.details.grpid,
                 token:JSON.parse(localStorage.getItem('whatsapp')),
-                phone:phone
+                phone:phone,
+                showSearch:false
             })
         }
     }
@@ -33,6 +34,12 @@ class ContactDetails extends React.Component {
         })
         console.log(col,inverseColor)
         return inverseColor
+      }
+
+      handleSearch=()=>{
+        this.setState({
+            showSearch:!this.state.showSearch
+        })
       }
 
     changeColor=async(e)=>{
@@ -67,6 +74,7 @@ class ContactDetails extends React.Component {
                 <div className='PhoneNumber' onDoubleClick={this.showMedia}>{(this.props.details.phone)?this.props.details.phone:this.props.details.name}</div>
                 
                 <div className='ContactDetailsIcon'>
+                    <div  className='search-box' style={{display:(this.state.showSearch)?'flex':'none'}}>
                     {(this.props.searchval.length)?
                         <div className='searchCounter'>
                             <div className='arrows'>
@@ -77,7 +85,10 @@ class ContactDetails extends React.Component {
 
                         </div>:''}
                     
-                {!this.props.isMedia ?<input className='searchChat' type='text' placeholder='search' onChange={this.search} value={this.props.searchval} ></input>:<button onClick={this.showChat}>back</button>}
+                {!this.props.isMedia ?<input className='searchChat' type='text' placeholder='search' onChange={this.search} value={this.props.searchval} ></input>:''}
+                </div>
+                {this.props.isMedia&&<button onClick={this.showChat}>back</button>}
+                <i style={{display:(this.state.showSearch||this.props.isMedia)?'none':'block'}} onClick={this.handleSearch} class="fas fa-search"></i>
                     {this.props.details.admin?<i className="fas fa-user-plus" onClick={this.addMembers}></i>:''}
 
                 {this.props.details.phone&&<input type="color" name="favcolor" value={this.state.color} onChange={this.changeColor}/>}

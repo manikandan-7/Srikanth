@@ -106,16 +106,27 @@
     background: white;
     padding: 0 1vw;
 }
-.ContactDetailsIcon *{
-        margin-right: 25px;
-        font-size: 4vh;
-        color: grey;
-}
 .ContactDetailsIcon {
     margin-left: auto;
     display: flex;
     align-items: center;
+    width: 35vw;
+    align-items: center;
+    justify-content: right;
 }
+.ContactDetailsIcon *{
+    /* background-color: var(--bgColor); */
+    margin-right: 10px;
+    /* font-size: 4vh; */
+    /* color: var(--fontColor); */
+    /* border-radius: 5px; */
+
+}
+.search-box {
+    /*! display: block; */display: flex;
+    align-items: center;
+   }
+   
 .Compose {
     display: flex;
     margin-bottom: 0;
@@ -126,11 +137,12 @@
     background: white;
 }
 .MessageField {
-    height: 78vh;
+    height: 76vh;
     background: transparent;
     display: flex;
     overflow: scroll;
     flex-direction: column;
+    padding: 20px;
 }
 .Compose > input:nth-child(2) {
     border: none;

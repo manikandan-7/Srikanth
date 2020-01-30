@@ -43,7 +43,7 @@ class ContactCard extends React.Component {
     render() { 
         console.log(this.props.updatedName,this.props.details.userid)
         return ( 
-            <div className='ContactCard' onClick={this.selectMe} style={{backgroundColor:(this.props.chat===this.props.details.phone || this.props.chat===this.props.details.grpid)?'#bdbdbd':'white'}}>
+            <div className='ContactCard' onClick={this.selectMe} style={{backgroundColor:(this.props.chat===this.props.details.phone || this.props.chat===this.props.details.grpid)?'rgb(223, 221, 221)':'white'}}>
                 <img src={(this.props.details.phone)?`${this.props.host}/images/${this.props.details.profile}`:`${this.props.host}/images/nodp.jpeg`} alt='profile'></img>
                 <div>
                     <div className='Name'  onDoubleClick={(this.props.details.phone)&&(()=>this.changeContactName(this.props.details))} >

@@ -139,7 +139,6 @@ class Home extends React.Component {
                 }
             })
             this.props.sockets[this.state.mydata.phone].on('chat-message',(data)=>{
-                // console.log('chat msg',data)
                 this.addIncomingMessage(data)
 
                 // this.props.sockets[this.state.mydata.phone].emit('i-recived',{phone:this.state.mydata.phone})
@@ -210,12 +209,13 @@ class Home extends React.Component {
         console.log('recived',msg)
         var from;
         if(msg.to){
-            console.log('recived private message')
-            this.props.contacts.forEach(element =>{
+            this.props.contacts.forEach((element,index) =>{
                 if(element.userid === msg.payload.msgFrm){
+                    console.log('recived private message')
                     from = element.phone
-                    let temp = this.props.messages
-                    temp[from].push(msg.payload)
+                    // let temp = this.props.messages
+                    // temp[from]?
+                    // temp[from].push(msg.payload):temp[from]=Array(msg.payload)
                     // alert('dispatching')
                     this.props.dispatch({
                         type:'add-message',
@@ -227,6 +227,15 @@ class Home extends React.Component {
                     this.setState({
                         rerender:!this.state.rerender
                     })
+                }
+                else if(index+1===this.props.contacts.length){
+                    this.props.sockets[this.state.mydata.phone].emit('newchat',{
+                                token:JSON.parse(localStorage.getItem('whatsapp')),
+                                id:msg.payload.msgFrm
+                            })
+                    setTimeout(() => {
+                        this.addIncomingMessage(msg)
+                    }, 800);
                 }
             })
 

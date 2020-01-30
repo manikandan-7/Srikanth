@@ -9,7 +9,7 @@ import {createStore} from 'redux'
 import MessageReducer from './reducer/MessageReducer'
 import { Provider } from 'react-redux';
 
-const store = createStore(MessageReducer)
+const store = createStore(MessageReducer,window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 const routing = (
     <Router>
         <switch>
